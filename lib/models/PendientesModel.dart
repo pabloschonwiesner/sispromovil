@@ -31,6 +31,7 @@ class Data {
   int cantBuenasProg;
   String fechaEntrega;
   String fecha;
+  bool isExpanded = false;
 
   Data(
       {this.codigoInterno,

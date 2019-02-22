@@ -10,7 +10,7 @@ import 'package:sispromovil/pages/OrdenesFinalizadas.dart';
  } // fin Home class
 
 class _HomeState extends State<Home>  {
-  int _selectedIndex = 0;
+  int _solapaSeleccionada = 0;
   // TabController controllerSolapas;
 
   @override
@@ -19,7 +19,7 @@ class _HomeState extends State<Home>  {
     // controllerSolapas =TabController(length: 4, vsync: this);
   }
 
-  ListTile _getItem(Icon icon, String description, String route) {
+  ListTile _obtenerItems(Icon icon, String description, String route) {
     return ListTile(
       leading: icon,
       title: Text(description),
@@ -38,12 +38,6 @@ class _HomeState extends State<Home>  {
     OrdenesFinalizadas()
   ];
 
-  void _seleccionarSolapa (int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -55,22 +49,22 @@ class _HomeState extends State<Home>  {
       drawer: Drawer(
         child: ListView(
           children: <Widget>[
-            _getItem(Icon(Icons.settings), 'Configuracion', '/configuracion')
+            _obtenerItems(Icon(Icons.settings), 'Configuracion', '/configuracion')
           ],
         )
       ),
       body: Center(
         child: Container(
           color: Theme.of(context).backgroundColor,
-            child: _pantallas[_selectedIndex]
+            child: _pantallas[_solapaSeleccionada]
           ),
       ),
       bottomNavigationBar: BottomNavigationBar(        
-        currentIndex: _selectedIndex,
+        currentIndex: _solapaSeleccionada,
         type: BottomNavigationBarType.fixed,
         onTap: (int index) {
           setState(() {
-           _selectedIndex = index; 
+           _solapaSeleccionada = index; 
           });
         },        
         items: [

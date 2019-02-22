@@ -1,7 +1,30 @@
 class PendientesPlanificadasModel {
+  List<Data> data;
+
+  PendientesPlanificadasModel({this.data});
+
+  PendientesPlanificadasModel.fromJson(Map<String, dynamic> json) {
+    if (json['data'] != null) {
+      data = new List<Data>();
+      json['data'].forEach((v) {
+        data.add(new Data.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.data != null) {
+      data['data'] = this.data.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Data {
   String codigoInterno;
-  String iD;
-  String subID;
+  String id;
+  String subId;
   int codigoTablero;
   String cliente;
   String vendedor;
@@ -16,10 +39,10 @@ class PendientesPlanificadasModel {
   int horasProgPar;
   double horasTotales;
 
-  PendientesPlanificadasModel(
+  Data(
       {this.codigoInterno,
-      this.iD,
-      this.subID,
+      this.id,
+      this.subId,
       this.codigoTablero,
       this.cliente,
       this.vendedor,
@@ -34,43 +57,43 @@ class PendientesPlanificadasModel {
       this.horasProgPar,
       this.horasTotales});
 
-  PendientesPlanificadasModel.fromJson(Map<String, dynamic> json) {
-    codigoInterno = json['Codigo_Interno'];
-    iD = json['ID'];
-    subID = json['SubID'];
-    codigoTablero = json['CodigoTablero'];
-    cliente = json['Cliente'];
-    vendedor = json['Vendedor'];
-    trabajo = json['Trabajo'];
-    maquina = json['Maquina'];
-    cantBuenasProg = json['Cant_Buenas_Prog'];
-    fechaEntrega = json['Fecha_Entrega'];
-    fechaInicio = json['FechaInicio'];
-    fechaFin = json['FechaFin'];
-    horasProgPrep = json['HorasProgPrep'];
-    horasProgProd = json['HorasProgProd'];
-    horasProgPar = json['HorasProgPar'];
-    horasTotales = json['HorasTotales'];
+  Data.fromJson(Map<String, dynamic> json) {
+    codigoInterno = json['codigo_interno'];
+    id = json['id'];
+    subId = json['sub_id'];
+    codigoTablero = json['codigo_tablero'];
+    cliente = json['cliente'];
+    vendedor = json['vendedor'];
+    trabajo = json['trabajo'];
+    maquina = json['maquina'];
+    cantBuenasProg = json['cant_buenas_prog'];
+    fechaEntrega = json['fecha_entrega'];
+    fechaInicio = json['fecha_inicio'];
+    fechaFin = json['fecha_fin'];
+    horasProgPrep = json['horas_prog_prep'];
+    horasProgProd = json['horas_prog_prod'];
+    horasProgPar = json['horas_prog_par'];
+    horasTotales = json['horas_totales'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Codigo_Interno'] = this.codigoInterno;
-    data['ID'] = this.iD;
-    data['SubID'] = this.subID;
-    data['CodigoTablero'] = this.codigoTablero;
-    data['Cliente'] = this.cliente;
-    data['Vendedor'] = this.vendedor;
-    data['Trabajo'] = this.trabajo;
-    data['Maquina'] = this.maquina;
-    data['Cant_Buenas_Prog'] = this.cantBuenasProg;
-    data['Fecha_Entrega'] = this.fechaEntrega;
-    data['FechaInicio'] = this.fechaInicio;
-    data['FechaFin'] = this.fechaFin;
-    data['HorasProgPrep'] = this.horasProgPrep;
-    data['HorasProgProd'] = this.horasProgProd;
-    data['HorasProgPar'] = this.horasProgPar;
-    data['HorasTotales'] = this.horasTotales;
+    data['codigo_interno'] = this.codigoInterno;
+    data['id'] = this.id;
+    data['sub_id'] = this.subId;
+    data['codigo_tablero'] = this.codigoTablero;
+    data['cliente'] = this.cliente;
+    data['vendedor'] = this.vendedor;
+    data['trabajo'] = this.trabajo;
+    data['maquina'] = this.maquina;
+    data['cant_buenas_prog'] = this.cantBuenasProg;
+    data['fecha_entrega'] = this.fechaEntrega;
+    data['fecha_inicio'] = this.fechaInicio;
+    data['fecha_fin'] = this.fechaFin;
+    data['horas_prog_prep'] = this.horasProgPrep;
+    data['horas_prog_prod'] = this.horasProgProd;
+    data['horas_prog_par'] = this.horasProgPar;
+    data['horas_totales'] = this.horasTotales;
     return data;
   }
 }

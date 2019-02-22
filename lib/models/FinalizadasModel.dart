@@ -1,8 +1,31 @@
 class FinalizadasModel {
+  List<Data> data;
+
+  FinalizadasModel({this.data});
+
+  FinalizadasModel.fromJson(Map<String, dynamic> json) {
+    if (json['data'] != null) {
+      data = new List<Data>();
+      json['data'].forEach((v) {
+        data.add(new Data.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.data != null) {
+      data['data'] = this.data.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Data {
   String codigoInterno;
   int codigo;
-  String iD;
-  String subID;
+  String id;
+  String subId;
   String codigoCliente;
   String descripcionCliente;
   String codigoVendedor;
@@ -10,14 +33,14 @@ class FinalizadasModel {
   String descSolapa;
   String descRecurso;
   String trabajo;
-  String fechaInicioOT;
-  String fechaFinOT;
+  String fechaInicioOt;
+  String fechaFinOt;
   String horaFinalizacion;
   int cantBuenasProg;
   int cantMalasProg;
   int cantidadBuenos;
   int cantidadMalos;
-  int difCantBuenos;
+  int difCantNuenos;
   int difCantMalos;
   int porcCompletado;
   int cantidadHorasProgPrep;
@@ -31,11 +54,11 @@ class FinalizadasModel {
   int codigoRenglon;
   double horaInicio;
 
-  FinalizadasModel(
+  Data(
       {this.codigoInterno,
       this.codigo,
-      this.iD,
-      this.subID,
+      this.id,
+      this.subId,
       this.codigoCliente,
       this.descripcionCliente,
       this.codigoVendedor,
@@ -43,14 +66,14 @@ class FinalizadasModel {
       this.descSolapa,
       this.descRecurso,
       this.trabajo,
-      this.fechaInicioOT,
-      this.fechaFinOT,
+      this.fechaInicioOt,
+      this.fechaFinOt,
       this.horaFinalizacion,
       this.cantBuenasProg,
       this.cantMalasProg,
       this.cantidadBuenos,
       this.cantidadMalos,
-      this.difCantBuenos,
+      this.difCantNuenos,
       this.difCantMalos,
       this.porcCompletado,
       this.cantidadHorasProgPrep,
@@ -64,73 +87,73 @@ class FinalizadasModel {
       this.codigoRenglon,
       this.horaInicio});
 
-  FinalizadasModel.fromJson(Map<String, dynamic> json) {
-    codigoInterno = json['Codigo_Interno'];
-    codigo = json['Codigo'];
-    iD = json['ID'];
-    subID = json['SubID'];
-    codigoCliente = json['CodigoCliente'];
-    descripcionCliente = json['DescripcionCliente'];
-    codigoVendedor = json['CodigoVendedor'];
-    descripcionVendedor = json['DescripcionVendedor'];
-    descSolapa = json['Desc_Solapa'];
-    descRecurso = json['Desc_Recurso'];
-    trabajo = json['Trabajo'];
-    fechaInicioOT = json['Fecha_Inicio_OT'];
-    fechaFinOT = json['Fecha_Fin_OT'];
-    horaFinalizacion = json['Hora_Finalizacion'];
-    cantBuenasProg = json['Cant_Buenas_Prog'];
-    cantMalasProg = json['Cant_Malas_Prog'];
-    cantidadBuenos = json['Cantidad_Buenos'];
-    cantidadMalos = json['Cantidad_Malos'];
-    difCantBuenos = json['Dif_Cant_Buenos'];
-    difCantMalos = json['Dif_Cant_Malos'];
-    porcCompletado = json['Porc_Completado'];
-    cantidadHorasProgPrep = json['CantidadHorasProgPrep'];
-    cantidadHorasProgProd = json['CantidadHorasProgProd'];
-    cantidadHorasProgPar = json['CantidadHorasProgPar'];
-    tiempoPreUtilizado = json['Tiempo_Pre_Utilizado'];
-    tiempoProUtilizado = json['Tiempo_Pro_Utilizado'];
-    tiempoParUtilizado = json['Tiempo_Par_Utilizado'];
-    usuario = json['Usuario'];
-    codigoSolapa = json['CodigoSolapa'];
-    codigoRenglon = json['CodigoRenglon'];
-    horaInicio = json['HoraInicio'];
+  Data.fromJson(Map<String, dynamic> json) {
+    codigoInterno = json['codigo_interno'];
+    codigo = json['codigo'];
+    id = json['id'];
+    subId = json['sub_id'];
+    codigoCliente = json['codigo_cliente'];
+    descripcionCliente = json['descripcion_cliente'];
+    codigoVendedor = json['codigo_vendedor'];
+    descripcionVendedor = json['descripcion_vendedor'];
+    descSolapa = json['desc_solapa'];
+    descRecurso = json['desc_recurso'];
+    trabajo = json['trabajo'];
+    fechaInicioOt = json['fecha_inicio_ot'];
+    fechaFinOt = json['fecha_fin_ot'];
+    horaFinalizacion = json['hora_finalizacion'];
+    cantBuenasProg = json['cant_buenas_prog'];
+    cantMalasProg = json['cant_malas_prog'];
+    cantidadBuenos = json['cantidad_buenos'];
+    cantidadMalos = json['cantidad_malos'];
+    difCantNuenos = json['dif_cant_nuenos'];
+    difCantMalos = json['dif_cant_malos'];
+    porcCompletado = json['porc_completado'];
+    cantidadHorasProgPrep = json['cantidad_horas_prog_prep'];
+    cantidadHorasProgProd = json['cantidad_horas_prog_prod'];
+    cantidadHorasProgPar = json['cantidad_horas_prog_par'];
+    tiempoPreUtilizado = json['tiempo_pre_utilizado'];
+    tiempoProUtilizado = json['tiempo_pro_utilizado'];
+    tiempoParUtilizado = json['tiempo_par_utilizado'];
+    usuario = json['usuario'];
+    codigoSolapa = json['codigo_solapa'];
+    codigoRenglon = json['codigo_renglon'];
+    horaInicio = json['hora_inicio'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Codigo_Interno'] = this.codigoInterno;
-    data['Codigo'] = this.codigo;
-    data['ID'] = this.iD;
-    data['SubID'] = this.subID;
-    data['CodigoCliente'] = this.codigoCliente;
-    data['DescripcionCliente'] = this.descripcionCliente;
-    data['CodigoVendedor'] = this.codigoVendedor;
-    data['DescripcionVendedor'] = this.descripcionVendedor;
-    data['Desc_Solapa'] = this.descSolapa;
-    data['Desc_Recurso'] = this.descRecurso;
-    data['Trabajo'] = this.trabajo;
-    data['Fecha_Inicio_OT'] = this.fechaInicioOT;
-    data['Fecha_Fin_OT'] = this.fechaFinOT;
-    data['Hora_Finalizacion'] = this.horaFinalizacion;
-    data['Cant_Buenas_Prog'] = this.cantBuenasProg;
-    data['Cant_Malas_Prog'] = this.cantMalasProg;
-    data['Cantidad_Buenos'] = this.cantidadBuenos;
-    data['Cantidad_Malos'] = this.cantidadMalos;
-    data['Dif_Cant_Buenos'] = this.difCantBuenos;
-    data['Dif_Cant_Malos'] = this.difCantMalos;
-    data['Porc_Completado'] = this.porcCompletado;
-    data['CantidadHorasProgPrep'] = this.cantidadHorasProgPrep;
-    data['CantidadHorasProgProd'] = this.cantidadHorasProgProd;
-    data['CantidadHorasProgPar'] = this.cantidadHorasProgPar;
-    data['Tiempo_Pre_Utilizado'] = this.tiempoPreUtilizado;
-    data['Tiempo_Pro_Utilizado'] = this.tiempoProUtilizado;
-    data['Tiempo_Par_Utilizado'] = this.tiempoParUtilizado;
-    data['Usuario'] = this.usuario;
-    data['CodigoSolapa'] = this.codigoSolapa;
-    data['CodigoRenglon'] = this.codigoRenglon;
-    data['HoraInicio'] = this.horaInicio;
+    data['codigo_interno'] = this.codigoInterno;
+    data['codigo'] = this.codigo;
+    data['id'] = this.id;
+    data['sub_id'] = this.subId;
+    data['codigo_cliente'] = this.codigoCliente;
+    data['descripcion_cliente'] = this.descripcionCliente;
+    data['codigo_vendedor'] = this.codigoVendedor;
+    data['descripcion_vendedor'] = this.descripcionVendedor;
+    data['desc_solapa'] = this.descSolapa;
+    data['desc_recurso'] = this.descRecurso;
+    data['trabajo'] = this.trabajo;
+    data['fecha_inicio_ot'] = this.fechaInicioOt;
+    data['fecha_fin_ot'] = this.fechaFinOt;
+    data['hora_finalizacion'] = this.horaFinalizacion;
+    data['cant_buenas_prog'] = this.cantBuenasProg;
+    data['cant_malas_prog'] = this.cantMalasProg;
+    data['cantidad_buenos'] = this.cantidadBuenos;
+    data['cantidad_malos'] = this.cantidadMalos;
+    data['dif_cant_nuenos'] = this.difCantNuenos;
+    data['dif_cant_malos'] = this.difCantMalos;
+    data['porc_completado'] = this.porcCompletado;
+    data['cantidad_horas_prog_prep'] = this.cantidadHorasProgPrep;
+    data['cantidad_horas_prog_prod'] = this.cantidadHorasProgProd;
+    data['cantidad_horas_prog_par'] = this.cantidadHorasProgPar;
+    data['tiempo_pre_utilizado'] = this.tiempoPreUtilizado;
+    data['tiempo_pro_utilizado'] = this.tiempoProUtilizado;
+    data['tiempo_par_utilizado'] = this.tiempoParUtilizado;
+    data['usuario'] = this.usuario;
+    data['codigo_solapa'] = this.codigoSolapa;
+    data['codigo_renglon'] = this.codigoRenglon;
+    data['hora_inicio'] = this.horaInicio;
     return data;
   }
 }

@@ -1,8 +1,31 @@
 class EnCursoModel {
+  List<Data> data;
+
+  EnCursoModel({this.data});
+
+  EnCursoModel.fromJson(Map<String, dynamic> json) {
+    if (json['data'] != null) {
+      data = new List<Data>();
+      json['data'].forEach((v) {
+        data.add(new Data.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.data != null) {
+      data['data'] = this.data.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Data {
   String codigoInterno;
   int codigo;
-  String iD;
-  String subID;
+  String id;
+  String subId;
   String codigoCliente;
   String descripcionCliente;
   String codigoVendedor;
@@ -25,20 +48,20 @@ class EnCursoModel {
   String descTurno;
   int cantidadHorasProgPrep;
   int cantidadHorasProgProd;
-  int cantidadHorasProgPar;
+  int cantidadHoraProgPar;
   double tiempoPreUtilizado;
   double tiempoProUtilizado;
   double tiempoParUtilizado;
   int velocidadActual;
-  int cS;
-  int cR;
+  int cs;
+  int cr;
   double inicio;
 
-  EnCursoModel(
+  Data(
       {this.codigoInterno,
       this.codigo,
-      this.iD,
-      this.subID,
+      this.id,
+      this.subId,
       this.codigoCliente,
       this.descripcionCliente,
       this.codigoVendedor,
@@ -61,88 +84,88 @@ class EnCursoModel {
       this.descTurno,
       this.cantidadHorasProgPrep,
       this.cantidadHorasProgProd,
-      this.cantidadHorasProgPar,
+      this.cantidadHoraProgPar,
       this.tiempoPreUtilizado,
       this.tiempoProUtilizado,
       this.tiempoParUtilizado,
       this.velocidadActual,
-      this.cS,
-      this.cR,
+      this.cs,
+      this.cr,
       this.inicio});
 
-  EnCursoModel.fromJson(Map<String, dynamic> json) {
-    codigoInterno = json['Codigo_Interno'];
-    codigo = json['Codigo'];
-    iD = json['ID'];
-    subID = json['SubID'];
-    codigoCliente = json['CodigoCliente'];
-    descripcionCliente = json['DescripcionCliente'];
-    codigoVendedor = json['CodigoVendedor'];
-    descripcionVendedor = json['DescripcionVendedor'];
-    descSolapa = json['Desc_Solapa'];
-    descRecurso = json['Desc_Recurso'];
-    cantBuenosProg = json['Cant_Buenos_Prog'];
-    trabajo = json['Trabajo'];
-    estado = json['Estado'];
-    codigoMotivo = json['CodigoMotivo'];
-    descripcionMotivo = json['Descripcion_Motivo'];
-    inicioEstadoActual = json['Inicio_Estado_Actual'];
-    inicioProceso = json['Inicio_Proceso'];
-    horasDesdeInicio = json['Horas_Desde_Inicio'];
-    horaFinalizacion = json['Hora_Finalizacion'];
-    cantidadBuenos = json['Cantidad_Buenos'];
-    cantidadMalos = json['Cantidad_Malos'];
-    porcAvance = json['Porc_Avance'];
-    descOperario = json['Desc_Operario'];
-    descTurno = json['Desc_Turno'];
-    cantidadHorasProgPrep = json['CantidadHorasProgPrep'];
-    cantidadHorasProgProd = json['CantidadHorasProgProd'];
-    cantidadHorasProgPar = json['CantidadHorasProgPar'];
-    tiempoPreUtilizado = json['Tiempo_Pre_Utilizado'];
-    tiempoProUtilizado = json['Tiempo_Pro_Utilizado'];
-    tiempoParUtilizado = json['Tiempo_Par_Utilizado'];
-    velocidadActual = json['VelocidadActual'];
-    cS = json['CS'];
-    cR = json['CR'];
-    inicio = json['Inicio'];
+  Data.fromJson(Map<String, dynamic> json) {
+    codigoInterno = json['codigo_interno'];
+    codigo = json['codigo'];
+    id = json['id'];
+    subId = json['sub_id'];
+    codigoCliente = json['codigo_cliente'];
+    descripcionCliente = json['descripcion_cliente'];
+    codigoVendedor = json['codigo_vendedor'];
+    descripcionVendedor = json['descripcion_vendedor'];
+    descSolapa = json['desc_solapa'];
+    descRecurso = json['desc_recurso'];
+    cantBuenosProg = json['cant_buenos_prog'];
+    trabajo = json['trabajo'];
+    estado = json['estado'];
+    codigoMotivo = json['codigo_motivo'];
+    descripcionMotivo = json['descripcion_motivo'];
+    inicioEstadoActual = json['inicio_estado_actual'];
+    inicioProceso = json['inicio_proceso'];
+    horasDesdeInicio = json['horas_desde_inicio'];
+    horaFinalizacion = json['hora_finalizacion'];
+    cantidadBuenos = json['cantidad_buenos'];
+    cantidadMalos = json['cantidad_malos'];
+    porcAvance = json['porc_avance'];
+    descOperario = json['desc_operario'];
+    descTurno = json['desc_turno'];
+    cantidadHorasProgPrep = json['cantidadHoras_prog_prep'];
+    cantidadHorasProgProd = json['cantidadHoras_prog_prod'];
+    cantidadHoraProgPar = json['cantidadHora_prog_par'];
+    tiempoPreUtilizado = json['tiempo_pre_utilizado'];
+    tiempoProUtilizado = json['tiempo_pro_utilizado'];
+    tiempoParUtilizado = json['tiempo_par_utilizado'];
+    velocidadActual = json['velocidad_actual'];
+    cs = json['cs'];
+    cr = json['cr'];
+    inicio = json['inicio'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Codigo_Interno'] = this.codigoInterno;
-    data['Codigo'] = this.codigo;
-    data['ID'] = this.iD;
-    data['SubID'] = this.subID;
-    data['CodigoCliente'] = this.codigoCliente;
-    data['DescripcionCliente'] = this.descripcionCliente;
-    data['CodigoVendedor'] = this.codigoVendedor;
-    data['DescripcionVendedor'] = this.descripcionVendedor;
-    data['Desc_Solapa'] = this.descSolapa;
-    data['Desc_Recurso'] = this.descRecurso;
-    data['Cant_Buenos_Prog'] = this.cantBuenosProg;
-    data['Trabajo'] = this.trabajo;
-    data['Estado'] = this.estado;
-    data['CodigoMotivo'] = this.codigoMotivo;
-    data['Descripcion_Motivo'] = this.descripcionMotivo;
-    data['Inicio_Estado_Actual'] = this.inicioEstadoActual;
-    data['Inicio_Proceso'] = this.inicioProceso;
-    data['Horas_Desde_Inicio'] = this.horasDesdeInicio;
-    data['Hora_Finalizacion'] = this.horaFinalizacion;
-    data['Cantidad_Buenos'] = this.cantidadBuenos;
-    data['Cantidad_Malos'] = this.cantidadMalos;
-    data['Porc_Avance'] = this.porcAvance;
-    data['Desc_Operario'] = this.descOperario;
-    data['Desc_Turno'] = this.descTurno;
-    data['CantidadHorasProgPrep'] = this.cantidadHorasProgPrep;
-    data['CantidadHorasProgProd'] = this.cantidadHorasProgProd;
-    data['CantidadHorasProgPar'] = this.cantidadHorasProgPar;
-    data['Tiempo_Pre_Utilizado'] = this.tiempoPreUtilizado;
-    data['Tiempo_Pro_Utilizado'] = this.tiempoProUtilizado;
-    data['Tiempo_Par_Utilizado'] = this.tiempoParUtilizado;
-    data['VelocidadActual'] = this.velocidadActual;
-    data['CS'] = this.cS;
-    data['CR'] = this.cR;
-    data['Inicio'] = this.inicio;
+    data['codigo_interno'] = this.codigoInterno;
+    data['codigo'] = this.codigo;
+    data['id'] = this.id;
+    data['sub_id'] = this.subId;
+    data['codigo_cliente'] = this.codigoCliente;
+    data['descripcion_cliente'] = this.descripcionCliente;
+    data['codigo_vendedor'] = this.codigoVendedor;
+    data['descripcion_vendedor'] = this.descripcionVendedor;
+    data['desc_solapa'] = this.descSolapa;
+    data['desc_recurso'] = this.descRecurso;
+    data['cant_buenos_prog'] = this.cantBuenosProg;
+    data['trabajo'] = this.trabajo;
+    data['estado'] = this.estado;
+    data['codigo_motivo'] = this.codigoMotivo;
+    data['descripcion_motivo'] = this.descripcionMotivo;
+    data['inicio_estado_actual'] = this.inicioEstadoActual;
+    data['inicio_proceso'] = this.inicioProceso;
+    data['horas_desde_inicio'] = this.horasDesdeInicio;
+    data['hora_finalizacion'] = this.horaFinalizacion;
+    data['cantidad_buenos'] = this.cantidadBuenos;
+    data['cantidad_malos'] = this.cantidadMalos;
+    data['porc_avance'] = this.porcAvance;
+    data['desc_operario'] = this.descOperario;
+    data['desc_turno'] = this.descTurno;
+    data['cantidadHoras_prog_prep'] = this.cantidadHorasProgPrep;
+    data['cantidadHoras_prog_prod'] = this.cantidadHorasProgProd;
+    data['cantidadHora_prog_par'] = this.cantidadHoraProgPar;
+    data['tiempo_pre_utilizado'] = this.tiempoPreUtilizado;
+    data['tiempo_pro_utilizado'] = this.tiempoProUtilizado;
+    data['tiempo_par_utilizado'] = this.tiempoParUtilizado;
+    data['velocidad_actual'] = this.velocidadActual;
+    data['cs'] = this.cs;
+    data['cr'] = this.cr;
+    data['inicio'] = this.inicio;
     return data;
   }
 }

@@ -1,11 +1,9 @@
 class PendientesModel {
-  int totalRegistros;
   List<Data> data;
 
-  PendientesModel({this.totalRegistros, this.data});
+  PendientesModel({this.data});
 
   PendientesModel.fromJson(Map<String, dynamic> json) {
-    totalRegistros = json['totalRegistros'];
     if (json['data'] != null) {
       data = new List<Data>();
       json['data'].forEach((v) {
@@ -16,7 +14,6 @@ class PendientesModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['totalRegistros'] = this.totalRegistros;
     if (this.data != null) {
       data['data'] = this.data.map((v) => v.toJson()).toList();
     }
@@ -34,6 +31,7 @@ class Data {
   int cantBuenasProg;
   String fechaEntrega;
   String fecha;
+  bool isExpanded = false;
 
   Data(
       {this.codigoInterno,

@@ -1,9 +1,11 @@
 class PendientesPlanificadasModel {
+  int totalRegistros;
   List<Data> data;
 
-  PendientesPlanificadasModel({this.data});
+  PendientesPlanificadasModel({this.totalRegistros, this.data});
 
   PendientesPlanificadasModel.fromJson(Map<String, dynamic> json) {
+    totalRegistros = json['totalRegistros'];
     if (json['data'] != null) {
       data = new List<Data>();
       json['data'].forEach((v) {
@@ -14,6 +16,7 @@ class PendientesPlanificadasModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['totalRegistros'] = this.totalRegistros;
     if (this.data != null) {
       data['data'] = this.data.map((v) => v.toJson()).toList();
     }
@@ -22,7 +25,33 @@ class PendientesPlanificadasModel {
 }
 
 class Data {
-  String codigoInterno;
+  String maquina;
+  List<Ots> ots;
+
+  Data({this.maquina, this.ots});
+
+  Data.fromJson(Map<String, dynamic> json) {
+    maquina = json['maquina'];
+    if (json['ots'] != null) {
+      ots = new List<Ots>();
+      json['ots'].forEach((v) {
+        ots.add(new Ots.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['maquina'] = this.maquina;
+    if (this.ots != null) {
+      data['ots'] = this.ots.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Ots {
+  int codigoInterno;
   String id;
   String subId;
   int codigoTablero;
@@ -30,16 +59,16 @@ class Data {
   String vendedor;
   String trabajo;
   String maquina;
-  int cantBuenasProg;
+  double cantBuenasProg;
   String fechaEntrega;
   String fechaInicio;
   String fechaFin;
   double horasProgPrep;
   double horasProgProd;
-  int horasProgPar;
+  double horasProgPar;
   double horasTotales;
 
-  Data(
+  Ots(
       {this.codigoInterno,
       this.id,
       this.subId,
@@ -57,23 +86,23 @@ class Data {
       this.horasProgPar,
       this.horasTotales});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  Ots.fromJson(Map<String, dynamic> json) {
     codigoInterno = json['codigo_interno'];
-    id = json['id'];
-    subId = json['sub_id'];
+    id = json['id'].toString();
+    subId = json['sub_id'].toString();
     codigoTablero = json['codigo_tablero'];
-    cliente = json['cliente'];
-    vendedor = json['vendedor'];
-    trabajo = json['trabajo'];
-    maquina = json['maquina'];
-    cantBuenasProg = json['cant_buenas_prog'];
-    fechaEntrega = json['fecha_entrega'];
-    fechaInicio = json['fecha_inicio'];
-    fechaFin = json['fecha_fin'];
-    horasProgPrep = json['horas_prog_prep'];
-    horasProgProd = json['horas_prog_prod'];
-    horasProgPar = json['horas_prog_par'];
-    horasTotales = json['horas_totales'];
+    cliente = json['cliente'].toString();
+    vendedor = json['vendedor'].toString();
+    trabajo = json['trabajo'].toString();
+    maquina = json['maquina'].toString();
+    cantBuenasProg = double.parse(json['cant_buenas_prog'].toString());
+    fechaEntrega = json['fecha_entrega'].toString();
+    fechaInicio = json['fecha_inicio'].toString();
+    fechaFin = json['fecha_fin'].toString();
+    horasProgPrep = double.parse(json['horas_prog_prep'].toString());
+    horasProgProd = double.parse(json['horas_prog_prod'].toString());
+    horasProgPar = double.parse(json['horas_prog_par'].toString());
+    horasTotales = double.parse(json['horas_totales'].toString());
   }
 
   Map<String, dynamic> toJson() {

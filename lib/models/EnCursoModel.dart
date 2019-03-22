@@ -22,7 +22,7 @@ class EnCursoModel {
 }
 
 class Data {
-  String codigoInterno;
+  int codigoInterno;
   int codigo;
   String id;
   String subId;
@@ -32,7 +32,7 @@ class Data {
   String descripcionVendedor;
   String descSolapa;
   String descRecurso;
-  int cantBuenosProg;
+  double cantBuenosProg;
   String trabajo;
   String estado;
   int codigoMotivo;
@@ -40,22 +40,27 @@ class Data {
   String inicioEstadoActual;
   String inicioProceso;
   double horasDesdeInicio;
-  String horaFinalizacion;
+  double horaFinalizacion;
+  double horasBarra;
   double cantidadBuenos;
   double cantidadMalos;
   double porcAvance;
   String descOperario;
   String descTurno;
-  int cantidadHorasProgPrep;
-  int cantidadHorasProgProd;
-  int cantidadHoraProgPar;
+  double cantidadHorasProgPrep;
+  double cantidadHorasProgProd;
+  double cantidadHoraProgPar;
+  double cantidadHorasProgTotales;
   double tiempoPreUtilizado;
   double tiempoProUtilizado;
   double tiempoParUtilizado;
-  int velocidadActual;
+  double velocidadActual;
   int cs;
   int cr;
   double inicio;
+  int red;
+  int green;
+  int blue;
 
   Data(
       {this.codigoInterno,
@@ -77,6 +82,7 @@ class Data {
       this.inicioProceso,
       this.horasDesdeInicio,
       this.horaFinalizacion,
+      this.horasBarra,
       this.cantidadBuenos,
       this.cantidadMalos,
       this.porcAvance,
@@ -85,13 +91,17 @@ class Data {
       this.cantidadHorasProgPrep,
       this.cantidadHorasProgProd,
       this.cantidadHoraProgPar,
+      this.cantidadHorasProgTotales,
       this.tiempoPreUtilizado,
       this.tiempoProUtilizado,
       this.tiempoParUtilizado,
       this.velocidadActual,
       this.cs,
       this.cr,
-      this.inicio});
+      this.inicio,
+      this.red,
+      this.green,
+      this.blue});
 
   Data.fromJson(Map<String, dynamic> json) {
     codigoInterno = json['codigo_interno'];
@@ -104,30 +114,35 @@ class Data {
     descripcionVendedor = json['descripcion_vendedor'];
     descSolapa = json['desc_solapa'];
     descRecurso = json['desc_recurso'];
-    cantBuenosProg = json['cant_buenos_prog'];
+    cantBuenosProg = double.parse(json['cant_buenos_prog'].toString());
     trabajo = json['trabajo'];
     estado = json['estado'];
     codigoMotivo = json['codigo_motivo'];
     descripcionMotivo = json['descripcion_motivo'];
     inicioEstadoActual = json['inicio_estado_actual'];
     inicioProceso = json['inicio_proceso'];
-    horasDesdeInicio = json['horas_desde_inicio'];
-    horaFinalizacion = json['hora_finalizacion'];
-    cantidadBuenos = json['cantidad_buenos'];
-    cantidadMalos = json['cantidad_malos'];
-    porcAvance = json['porc_avance'];
+    horasDesdeInicio = double.parse(json['horas_desde_inicio'].toString());
+    horaFinalizacion = double.parse(json['hora_finalizacion'].toString());
+    horasBarra = double.parse(json['horas_barra'].toString());
+    cantidadBuenos = double.parse(json['cantidad_buenos'].toString());
+    cantidadMalos = double.parse(json['cantidad_malos'].toString());
+    porcAvance = double.parse(json['porc_avance'].toString());
     descOperario = json['desc_operario'];
     descTurno = json['desc_turno'];
-    cantidadHorasProgPrep = json['cantidadHoras_prog_prep'];
-    cantidadHorasProgProd = json['cantidadHoras_prog_prod'];
-    cantidadHoraProgPar = json['cantidadHora_prog_par'];
-    tiempoPreUtilizado = json['tiempo_pre_utilizado'];
-    tiempoProUtilizado = json['tiempo_pro_utilizado'];
-    tiempoParUtilizado = json['tiempo_par_utilizado'];
-    velocidadActual = json['velocidad_actual'];
+    cantidadHorasProgPrep = double.parse(json['cantidadHoras_prog_prep'].toString());
+    cantidadHorasProgProd = double.parse(json['cantidadHoras_prog_prod'].toString());
+    cantidadHoraProgPar = double.parse(json['cantidadHora_prog_par'].toString());
+    cantidadHorasProgTotales = double.parse(json['cantidadHoras_prog_totales'].toString());
+    tiempoPreUtilizado = double.parse(json['tiempo_pre_utilizado'].toString());
+    tiempoProUtilizado = double.parse(json['tiempo_pro_utilizado'].toString());
+    tiempoParUtilizado = double.parse(json['tiempo_par_utilizado'].toString());
+    velocidadActual = double.parse(json['velocidad_actual'].toString());
     cs = json['cs'];
     cr = json['cr'];
     inicio = json['inicio'];
+    red = json['red'];
+    green = json['green'];
+    blue = json['blue'];
   }
 
   Map<String, dynamic> toJson() {
@@ -151,6 +166,7 @@ class Data {
     data['inicio_proceso'] = this.inicioProceso;
     data['horas_desde_inicio'] = this.horasDesdeInicio;
     data['hora_finalizacion'] = this.horaFinalizacion;
+    data['horas_barra'] = this.horasBarra;
     data['cantidad_buenos'] = this.cantidadBuenos;
     data['cantidad_malos'] = this.cantidadMalos;
     data['porc_avance'] = this.porcAvance;
@@ -159,6 +175,7 @@ class Data {
     data['cantidadHoras_prog_prep'] = this.cantidadHorasProgPrep;
     data['cantidadHoras_prog_prod'] = this.cantidadHorasProgProd;
     data['cantidadHora_prog_par'] = this.cantidadHoraProgPar;
+    data['cantidadHoras_prog_totales'] = this.cantidadHorasProgTotales;
     data['tiempo_pre_utilizado'] = this.tiempoPreUtilizado;
     data['tiempo_pro_utilizado'] = this.tiempoProUtilizado;
     data['tiempo_par_utilizado'] = this.tiempoParUtilizado;
@@ -166,6 +183,9 @@ class Data {
     data['cs'] = this.cs;
     data['cr'] = this.cr;
     data['inicio'] = this.inicio;
+    data['red'] = this.red;
+    data['green'] = this.green;
+    data['blue'] = this.blue;
     return data;
   }
 }

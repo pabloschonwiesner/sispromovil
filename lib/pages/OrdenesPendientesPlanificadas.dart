@@ -36,7 +36,6 @@ class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas
           itemsPendientesPlanificadas.data.addAll(PendientesPlanificadasModel.fromJson(decodeJson).data);
         }
         parcialItems =itemsPendientesPlanificadas.data.length;
-        print('Parcial items: $parcialItems');
       });      
     } else {
       print('error');
@@ -47,10 +46,12 @@ class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas
     var minutos = ((hs - hs.floor()) * 60).round();
     String strMinutos = '';
     minutos<10 ? strMinutos = '0' + minutos.toString() :strMinutos =minutos.toString();
-    print('Hs: $hs, minutos: $minutos');
     return hs.floor().toString() + ':' + strMinutos; 
   }
 
+
+
+  // sin hero
   Widget _itemOT(Ots ot) {
     double anchoPantalla = MediaQuery.of(context).size.width;
     return Container(
@@ -58,7 +59,6 @@ class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas
       width: anchoPantalla * 0.80,
       decoration: BoxDecoration(
         color: Colors.lightBlue[900].withOpacity(0.1),
-        // border: Border.all(color: Colors.cyan[600]),
         borderRadius: BorderRadius.all(Radius.circular(3))
       ),
       child: Padding(
@@ -73,7 +73,7 @@ class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas
               children: <Widget>[
                 Text('Cant Prog: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                 Text('${ot.cantBuenasProg}', style: TextStyle(fontSize: 12)),
-                Text('    Hs total Prog: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                Text('    Hs Total Prog: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                 Text('${_hsSexagesimales(ot.horasTotales)}', style: TextStyle(fontSize: 12)),
               ],
             )
@@ -149,14 +149,12 @@ class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas
               ), 
               flex: 17,
             ),
-            Expanded(child: Text('80/100', style: TextStyle(fontSize: 10),), flex: 3,)
+            // Expanded(child: Text('80/100', style: TextStyle(fontSize: 10),), flex: 3,)
           ],
         )         
       ),
       Flexible(
-        child: _listaRecursos()
-          
-        
+        child: _listaRecursos()       
       )
     ],
   );

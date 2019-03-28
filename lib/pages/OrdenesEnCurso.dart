@@ -17,13 +17,19 @@ class _OrdenesEnCurso extends State<OrdenesEnCurso> {
   int totalItems = 0;
   Duration ms = Duration(milliseconds: 1);
   EnCursoModel itemsEnCurso;
+  var timer;
 
   @override 
   void initState() {
     super.initState();
       _obtenerEnCurso();
-      _iniciarTimer(5000);
-    
+      timer = _iniciarTimer(5000);    
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    timer.cancel();
   }
 
   Timer _iniciarTimer(int milisegundos) {
@@ -64,7 +70,7 @@ class _OrdenesEnCurso extends State<OrdenesEnCurso> {
           margin: EdgeInsets.fromLTRB(4,4,4,15),
           elevation: 15,
           child: Container(
-            height: 100,
+            height: 120,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -75,15 +81,19 @@ class _OrdenesEnCurso extends State<OrdenesEnCurso> {
                       width: 10
                     )),
                   ),
-                  height: 100
+                  height: 120
                 ),
                 Container(
                   child: Expanded(
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(10, 4, 4, 10),
+                      padding: EdgeInsets.fromLTRB(10, 4, 4, 5),
                       child: Column(                      
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 1),
+                            child: Text('${recurso.descRecurso}', style:TextStyle(color: Theme.of(context).primaryColor)),
+                          ),                          
                           Text('OT: ${recurso.id}  SUBID: ${recurso.subId}', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),),
                           Text('${recurso.descripcionCliente}', textAlign: TextAlign.start, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                           Text('${recurso.trabajo}', textAlign: TextAlign.start, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontStyle: FontStyle.italic)),
@@ -129,8 +139,7 @@ class _OrdenesEnCurso extends State<OrdenesEnCurso> {
   }
 
  @override
- Widget build(BuildContext context) {
-   
+ Widget build(BuildContext context) {   
   return Column(
     children: <Widget>[
       Padding(

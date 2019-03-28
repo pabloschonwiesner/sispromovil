@@ -51,13 +51,14 @@ class Data {
 }
 
 class Ots {
-  int codigoInterno;
+  String fechaOT;
   String id;
   String subId;
   int codigoTablero;
   String cliente;
   String vendedor;
   String trabajo;
+  int cantidadProducto;
   String maquina;
   double cantBuenasProg;
   String fechaEntrega;
@@ -69,13 +70,14 @@ class Ots {
   double horasTotales;
 
   Ots(
-      {this.codigoInterno,
-      this.id,
+      {this.id,
+      this.fechaOT,
       this.subId,
       this.codigoTablero,
       this.cliente,
       this.vendedor,
       this.trabajo,
+      this.cantidadProducto,
       this.maquina,
       this.cantBuenasProg,
       this.fechaEntrega,
@@ -87,13 +89,14 @@ class Ots {
       this.horasTotales});
 
   Ots.fromJson(Map<String, dynamic> json) {
-    codigoInterno = json['codigo_interno'];
     id = json['id'].toString();
+    fechaOT = json['fecha_ot'];
     subId = json['sub_id'].toString();
     codigoTablero = json['codigo_tablero'];
     cliente = json['cliente'].toString();
     vendedor = json['vendedor'].toString();
     trabajo = json['trabajo'].toString();
+    cantidadProducto = json['cantidad_producto'];
     maquina = json['maquina'].toString();
     cantBuenasProg = double.parse(json['cant_buenas_prog'].toString());
     fechaEntrega = json['fecha_entrega'].toString();
@@ -107,13 +110,14 @@ class Ots {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['codigo_interno'] = this.codigoInterno;
     data['id'] = this.id;
+    data['fecha_ot'] = this.fechaOT;
     data['sub_id'] = this.subId;
     data['codigo_tablero'] = this.codigoTablero;
     data['cliente'] = this.cliente;
     data['vendedor'] = this.vendedor;
     data['trabajo'] = this.trabajo;
+    data['cantidad_producto'] = this.cantidadProducto;
     data['maquina'] = this.maquina;
     data['cant_buenas_prog'] = this.cantBuenasProg;
     data['fecha_entrega'] = this.fechaEntrega;

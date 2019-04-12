@@ -88,7 +88,7 @@ class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas
                   Row(
                     children: <Widget>[
                       Text('Inicio: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                      Text('${DateFormat('dd/MM/yyyy').format(DateTime.parse(ot.fechaInicio))}', style: TextStyle(fontSize: 12)),
+                      Text('${DateFormat('dd/MM/yyyy hh:mm').format(DateTime.parse(ot.fechaInicio))}', style: TextStyle(fontSize: 12)),
                       Text('    Hs Prog: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                       Text('${_hsSexagesimales(ot.horasTotales)}', style: TextStyle(fontSize: 12)),
                     ],

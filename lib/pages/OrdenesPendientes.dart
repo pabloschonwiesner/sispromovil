@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:sispromovil/models/PendientesModel.dart';
-import 'package:sispromovil/components/PanelOTPendiente.dart';
+import 'package:intl/intl.dart';
 import 'package:sispromovil/config/config.dart';
 
 const baseUrl = '${Config.baseUrl}/pendientes';
@@ -52,42 +52,58 @@ class _OrdenesPendientes extends State<OrdenesPendientes> {
  Widget build(BuildContext context) {
   return Column(
       children: <Widget>[
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 10),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  'Ordenes pendientes', 
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,                    
-                  ),
-                  textAlign: TextAlign.center,
-                ), 
-                flex: 17,
-              ),
-              Expanded(child: Text('${parcialItems > totalItems ? totalItems :parcialItems}/$totalItems', style: TextStyle(fontSize: 10),), flex: 3,)
-            ],
-          )         
-        ),
-          Flexible(
-            child: ListView.builder(
-              itemCount: parcialItems > totalItems ? totalItems : parcialItems,
-              itemBuilder: (BuildContext context, int index) {
-                if(index == parcialItems -1) {
-                  desdeItem = parcialItems;
-                  _obtenerPendientes();
-                  if(index < totalItems) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                } else {
-                  return PanelOTPendiente(itemsPendientes.data[index]);
+        Flexible(
+          child: ListView.builder(
+            itemCount: parcialItems > totalItems ? totalItems : parcialItems,
+            itemBuilder: (BuildContext context, int index) {
+              var ot =itemsPendientes.data[index];
+              if(index == parcialItems -1) {
+                desdeItem = parcialItems;
+                _obtenerPendientes();
+                if(index < totalItems) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
                 }
+              } else {
+                return Card(      
+                  elevation: 10,
+                  margin: EdgeInsets.fromLTRB(4, 6, 4, 6),
+                  child: Padding(
+                    padding: EdgeInsets.all(6),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('OT: ${ot.id}  SubOT: ${ot.subId}', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                          Text('${ot.cliente}', textAlign: TextAlign.start, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                          Text(
+                            '${ot.cantidadProducto} un - ${ot.trabajo}', 
+                            textAlign: TextAlign.start, 
+                            overflow: TextOverflow.ellipsis, 
+                            style: TextStyle(fontSize: 13, fontStyle: FontStyle.italic),
+                            maxLines: 2),
+                          Row(
+                            children: <Widget>[
+                              Text('Fecha OT: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                              Text(
+                                '${DateFormat('dd/MM/yyyy').format(DateTime.parse(ot.fechaOT))}',
+                                style: TextStyle(fontSize: 12)
+                              ),
+                              Text('   Fecha Ent: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                              Text(
+                                '${DateFormat('dd/MM/yyyy').format(DateTime.parse(ot.fechaEntrega))}',
+                                style: TextStyle(fontSize: 12),)
+                            ],
+                          ),
+                          
+                        ],
+                      )
+                    )
+                  );
               }
-            )
-          ),        
+            }
+          )
+        ),        
       ],
     );
  }

@@ -4,6 +4,7 @@ import 'package:sispromovil/models/FinalizadasModel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:sispromovil/pages/OTFinalizada.dart';
+import 'package:intl/intl.dart';
 
 String urlBase = '${Config.baseUrl}/finalizadas';
 
@@ -55,8 +56,7 @@ class _OrdenesFinalizadas extends State<OrdenesFinalizadas> {
       child: ListView.builder(
         itemCount: itemsFinalizados.data.length,
         itemBuilder: (BuildContext context, int index) {
-          print('Parcial items: ');
-          // print(itemsFinalizados.data[index]);
+          var ot = itemsFinalizados.data[index];
           if(index == parcialItems -1) {
             desdeItem = parcialItems;
             _obtenerFinalizadas();
@@ -70,7 +70,7 @@ class _OrdenesFinalizadas extends State<OrdenesFinalizadas> {
               onTap: () { Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => OTFinalizada(id: itemsFinalizados.data[index].id, subID: itemsFinalizados.data[index].subId)
+                  builder: (context) => OTFinalizada(id: ot.id, subID: ot.subId)
                 ));
               },
               child: Card(
@@ -88,19 +88,32 @@ class _OrdenesFinalizadas extends State<OrdenesFinalizadas> {
                             child: Column(                      
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[                     
-                                Text('OT: ${itemsFinalizados.data[index].id}  SUBID: ${itemsFinalizados.data[index].subId}', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),),
-                                Text('${itemsFinalizados.data[index].cliente}', textAlign: TextAlign.start, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-                                Text('${itemsFinalizados.data[index].trabajo}', textAlign: TextAlign.start, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontStyle: FontStyle.italic)),
+                                Text('OT: ${ot.id}  SubOT: ${ot.subId}', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),),
+                                Text('${ot.cliente}', textAlign: TextAlign.start, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                                Text('${ot.cantidadProducto} un -${ot.trabajo}', textAlign: TextAlign.start, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontStyle: FontStyle.italic)),
+                                Row(
+                                  children: <Widget>[
+                                    Text('Fecha OT: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                    Text(
+                                      '${DateFormat('dd/MM/yyyy').format(DateTime.parse(ot.fechaOT))}',
+                                      style: TextStyle(fontSize: 12)
+                                    ),
+                                    Text('   Fecha Ent: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                    Text(
+                                      '${DateFormat('dd/MM/yyyy').format(DateTime.parse(ot.fechaEntrega))}',
+                                      style: TextStyle(fontSize: 12),)
+                                  ],
+                                ),
                                 Row(
                                   children: <Widget>[
                                     Text('Inicio OT: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                                    Text('${itemsFinalizados.data[index].inicioOt}', style: TextStyle(fontSize: 12))
+                                    Text('${DateFormat('dd/MM/yyyy hh:mm').format(DateTime.parse(ot.inicioOt))}', style: TextStyle(fontSize: 12))
                                   ],
                                 ),
                                 Row(
                                   children: <Widget>[
                                     Text('Fin OT: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                                    Text('${itemsFinalizados.data[index].finOt}', style: TextStyle(fontSize: 12))
+                                    Text('${DateFormat('dd/MM/yyyy hh:mm').format(DateTime.parse(ot.finOt))}', style: TextStyle(fontSize: 12))
                                   ],
                                 ),
                                 
@@ -126,31 +139,7 @@ class _OrdenesFinalizadas extends State<OrdenesFinalizadas> {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 10),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  'Ordenes Finalizadas',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                flex: 18,
-              ),
-              Expanded(
-                flex: 2,
-                child: Text(
-                  parcialItems.toString(),
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold
-                  ),),
-              )
-            ],
-          ),
-        ),
+        
         _listaOTSFinalizadas()
       ],
     );

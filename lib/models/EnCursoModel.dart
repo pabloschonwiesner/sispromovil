@@ -26,6 +26,7 @@ class Data {
   int codigo;
   String id;
   String subId;
+  String fechaOT;
   String codigoCliente;
   String descripcionCliente;
   String codigoVendedor;
@@ -34,6 +35,8 @@ class Data {
   String descRecurso;
   double cantBuenosProg;
   String trabajo;
+  int cantidadProducto;
+  String fechaEntrega;
   String estado;
   int codigoMotivo;
   String descripcionMotivo;
@@ -67,6 +70,7 @@ class Data {
       this.codigo,
       this.id,
       this.subId,
+      this.fechaOT,
       this.codigoCliente,
       this.descripcionCliente,
       this.codigoVendedor,
@@ -75,6 +79,8 @@ class Data {
       this.descRecurso,
       this.cantBuenosProg,
       this.trabajo,
+      this.cantidadProducto,
+      this.fechaEntrega,
       this.estado,
       this.codigoMotivo,
       this.descripcionMotivo,
@@ -108,6 +114,7 @@ class Data {
     codigo = json['codigo'];
     id = json['id'];
     subId = json['sub_id'];
+    fechaOT = json['fecha_ot'];
     codigoCliente = json['codigo_cliente'];
     descripcionCliente = json['descripcion_cliente'];
     codigoVendedor = json['codigo_vendedor'];
@@ -116,6 +123,8 @@ class Data {
     descRecurso = json['desc_recurso'];
     cantBuenosProg = double.parse(json['cant_buenos_prog'].toString());
     trabajo = json['trabajo'];
+    cantidadProducto = json['cantidad_producto'];
+    fechaEntrega = json['fecha_entrega'];
     estado = json['estado'];
     codigoMotivo = json['codigo_motivo'];
     descripcionMotivo = json['descripcion_motivo'];
@@ -151,6 +160,7 @@ class Data {
     data['codigo'] = this.codigo;
     data['id'] = this.id;
     data['sub_id'] = this.subId;
+    data['fecha_ot'] = this.fechaOT;
     data['codigo_cliente'] = this.codigoCliente;
     data['descripcion_cliente'] = this.descripcionCliente;
     data['codigo_vendedor'] = this.codigoVendedor;
@@ -159,6 +169,8 @@ class Data {
     data['desc_recurso'] = this.descRecurso;
     data['cant_buenos_prog'] = this.cantBuenosProg;
     data['trabajo'] = this.trabajo;
+    data['cantidad_producto'] = this.cantidadProducto;
+    data['fecha_entrega'] = this.fechaEntrega;
     data['estado'] = this.estado;
     data['codigo_motivo'] = this.codigoMotivo;
     data['descripcion_motivo'] = this.descripcionMotivo;

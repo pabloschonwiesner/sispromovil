@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:sispromovil/config/config.dart';
 import 'dart:convert';
 import 'dart:async';
+import 'package:intl/intl.dart';
 
 const String baseUrl = '${Config.baseUrl}/enProceso';
 
@@ -39,13 +40,11 @@ class _OrdenesEnCurso extends State<OrdenesEnCurso> {
 
   void _obtenerEnCurso() async {
     var response = await http.get('$baseUrl');
-    print('peticion realizada');
     if(response.statusCode == 200) {
       setState(() {
         var decodeJson = jsonDecode(response.body);
         itemsEnCurso = EnCursoModel.fromJson(decodeJson);
         totalItems = itemsEnCurso.data.length;
-        print('Cant: ${itemsEnCurso.data.length}');
       });      
     } else {
       print('error');
@@ -68,9 +67,9 @@ class _OrdenesEnCurso extends State<OrdenesEnCurso> {
       child: ListView(
         children: itemsEnCurso.data.map((recurso) => Card(
           margin: EdgeInsets.fromLTRB(4,4,4,15),
-          elevation: 15,
+          elevation: 10,
           child: Container(
-            height: 120,
+            height: 130,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -81,7 +80,7 @@ class _OrdenesEnCurso extends State<OrdenesEnCurso> {
                       width: 10
                     )),
                   ),
-                  height: 120
+                  height: 130
                 ),
                 Container(
                   child: Expanded(
@@ -94,20 +93,33 @@ class _OrdenesEnCurso extends State<OrdenesEnCurso> {
                             padding: EdgeInsets.symmetric(vertical: 1),
                             child: Text('${recurso.descRecurso}', style:TextStyle(color: Theme.of(context).primaryColor)),
                           ),                          
-                          Text('OT: ${recurso.id}  SUBID: ${recurso.subId}', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),),
+                          Text('OT: ${recurso.id}  SubOT: ${recurso.subId}', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),),
                           Text('${recurso.descripcionCliente}', textAlign: TextAlign.start, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-                          Text('${recurso.trabajo}', textAlign: TextAlign.start, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontStyle: FontStyle.italic)),
+                          Text('${recurso.cantidadProducto} un - ${recurso.trabajo}', textAlign: TextAlign.start, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontStyle: FontStyle.italic), maxLines: 2,),
+                          Row(
+                            children: <Widget>[
+                              Text('Fecha OT: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                              Text(
+                                '${DateFormat('dd/MM/yyyy').format(DateTime.parse(recurso.fechaOT))}',
+                                style: TextStyle(fontSize: 12)
+                              ),
+                              Text('   Fecha Ent: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                              Text(
+                                '${DateFormat('dd/MM/yyyy').format(DateTime.parse(recurso.fechaEntrega))}',
+                                style: TextStyle(fontSize: 12),)
+                            ],
+                          ),
                           Row(
                             children: <Widget>[
                               Text('Cant Prog: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                              Text('${recurso.cantBuenosProg}', style: TextStyle(fontSize: 12)),
-                              Text('    Hs Total Prog: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                              Text('${recurso.cantBuenosProg.floor()}', style: TextStyle(fontSize: 12)),
+                              Text('    Hs Prog: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                               Text('${recurso.cantidadHorasProgTotales > 0 ? _hsSexagesimales(recurso.cantidadHorasProgTotales) : _hsSexagesimales(recurso.horasBarra)}', style: TextStyle(fontSize: 12)),
                             ],
                           ),
                           Row(
                             children: <Widget>[
-                              Text('Cant Buenos: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                              Text('Cant Producida: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                               Text('${recurso.cantidadBuenos.round()}', style: TextStyle(fontSize: 12))
                             ],
                           )
@@ -142,23 +154,6 @@ class _OrdenesEnCurso extends State<OrdenesEnCurso> {
  Widget build(BuildContext context) {   
   return Column(
     children: <Widget>[
-      Padding(
-        padding: EdgeInsets.symmetric(vertical: 10),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Text(
-                'Ordenes en Curso', 
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,                    
-                ),
-                textAlign: TextAlign.center,
-              ), 
-              flex: 17,
-            ),
-          ],
-        )         
-      ),
       Flexible(
         child: _listaRecursos()       
       )

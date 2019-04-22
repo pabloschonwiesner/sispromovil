@@ -2,19 +2,18 @@ import 'dart:async';
 import 'dart:io';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:sispromovil/bd/ParamsModel.dart';
+import 'package:sispromovil/models/PlantaModel.dart';
 import 'package:sqflite/sqflite.dart';
 
-class DBProvider {
-  DBProvider._();
-  static final DBProvider db = DBProvider._();
+class PlantaProvider {
+  PlantaProvider._();
+  static final PlantaProvider db = PlantaProvider._();
   Database _database;
   
 
   Future<Database> get database async {
 
     if (_database != null) return _database;
-    // if _database is null we instantiate it
     _database = await initDB();
     return _database;
   }
@@ -40,46 +39,49 @@ class DBProvider {
     final db = await database;
     var res;
     var q = await db.rawQuery('SELECT * FROM Parametros WHERE id =  1 and codigo = "DEMO15"');
-    print('Prueba: $q' );
     if(q.isEmpty) {
-      print('entra en el if');
       res = await db.rawInsert('INSERT INTO Parametros (id, planta, codigo, servidor, puerto, seleccionada) VALUES(?,?,?,?,?,?)',
       [1, 'Planta Demo', 'DEMO15', 'http://192.168.1.79/', 3002, 1]);
     }
     return res;
   }
 
-  addParams(ParamsModel params) async {
+  addPlanta(PlantaModel planta) async {
     final db = await database;
     var table = await db.rawQuery("SELECT MAX(id) +1 as id from Parametros");
     var idSiguiente = table.first['id'];
-    var res = await db.rawInsert("INSERT INTO Parametros (id, planta, codigo, servidor, puerto, seleccionada) VALUES (?,?,?,?,?,?)",
-    [idSiguiente, params.planta, params.codigo, params.servidor, params.puerto,0]);
-    return res;
+    await db.rawInsert("INSERT INTO Parametros (id, planta, codigo, servidor, puerto, seleccionada) VALUES (?,?,?,?,?,?)",
+    [idSiguiente, planta.planta, planta.codigo, planta.servidor, planta.puerto,0]);
+    
   }
 
-  Future<List<ParamsModel>> getListParams() async {
+  Future<List<PlantaModel>> getListPlantas() async {
     final db = await database;
     var res = await db.query('Parametros');
-    List<ParamsModel> listParams = res.isNotEmpty ? res.map((item) => ParamsModel.fromMap(item)).toList() : [];
-    return listParams;
+    List<PlantaModel> listPlantas = res.map((item) => PlantaModel.fromMap(item)).toList();
+    return listPlantas;
   }
 
-  getParams(int id) async {
+  getPlanta(int id) async {
     final db = await database;
     var res = await db.query('Parametros', where: 'id = ?', whereArgs: [id]);
-    return res.isNotEmpty ? ParamsModel.fromMap(res.first) : null;
+    return PlantaModel.fromMap(res.first);
   }
 
-  updateParams(ParamsModel params) async {
+  getPlantaSelect() async {
     final db = await database;
-    var res = await db.update('Parametros', params.toMap(), where: "id = ?", whereArgs: [params.id]);
-    return res;
+    var res = await db.query('Parametros', where: 'seleccionada = ?', whereArgs: [1]);
+    return PlantaModel.fromMap(res.first);
   }
 
-  deleteParams(int id) async {
+  updatePlanta(PlantaModel planta) async {
     final db = await database;
-    db.delete('Parametros', where: 'id = ?', whereArgs: [id]);
+    await db.update('Parametros', planta.toMap(), where: "id = ?", whereArgs: [planta.id]);    
+  }
+
+  deletePlanta(PlantaModel planta) async {
+    final db = await database;
+    db.delete('Parametros', where: 'id = ?', whereArgs: [planta.id]);
   }
 
   selectPlanta(int id) async {

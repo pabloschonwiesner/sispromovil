@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:sispromovil/pages/OrdenesPendientes.dart';
-import 'package:sispromovil/pages/OrdenesPendientesPlanificadas.dart';
-import 'package:sispromovil/pages/OrdenesEnCurso.dart';
-import 'package:sispromovil/pages/OrdenesFinalizadas.dart';
-import 'package:sispromovil/pages/Search.dart';
-import 'package:sispromovil/bd/Database.dart';
-import 'package:sispromovil/bd/ParamsModel.dart';
-import 'package:sispromovil/pages/Configuracion.dart';
-import 'package:sispromovil/pages/EditarPlanta.dart';
-import 'package:sispromovil/blocs/Bloc.dart';
+import 'package:sispromovil/widgets/pages/OrdenesPendientes.dart';
+import 'package:sispromovil/widgets/pages/OrdenesPendientesPlanificadas.dart';
+import 'package:sispromovil/widgets/pages/OrdenesEnCurso.dart';
+import 'package:sispromovil/widgets/pages/OrdenesFinalizadas.dart';
+import 'package:sispromovil/widgets/pages/Search.dart';
+import 'package:sispromovil/models/PlantaModel.dart';
+import 'package:sispromovil/widgets/pages/CrearPlanta.dart';
+import 'package:sispromovil/widgets/pages/EditarPlanta.dart';
+import 'package:sispromovil/blocs/plantas/BlocPlantaProvider.dart';
+import 'package:sispromovil/blocs/plantas/BlocPlanta.dart';
 
 
  class Home extends StatefulWidget {
@@ -21,7 +21,13 @@ class _HomeState extends State<Home>  {
 
   @override
   void initState() {
-    super.initState();
+    super.initState();    
+    // blocPlanta.llenarListaPlantas();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   List<Widget> _pantallas = <Widget> [
@@ -34,17 +40,27 @@ class _HomeState extends State<Home>  {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: AppBar(
+      appBar: AppBar(        
         title: StreamBuilder(
-          stream: bloc.getPlantaController,
-          builder: (BuildContext context, snapshot) {
-            print(snapshot);
-            return Text(
-              'Sispro Mobile' 
-            );
+          stream: blocPlanta.planta,
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if(snapshot.hasData) {
+              return RichText(
+                text: TextSpan(
+                  text: 'Sispro Mobile \n',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  children: <TextSpan>[
+                    TextSpan(text: '${snapshot.data}', style: TextStyle(fontSize: 12)),
+                  ],
+                ),
+                maxLines: 2,
+              );
+            } else {
+              return Text('Sispro Mobile');
+            }
+            
           },
-        ),    
-        
+        ),        
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.search),
@@ -100,7 +116,7 @@ class _HomeState extends State<Home>  {
                 color: Colors.blueAccent,                
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(
-                    builder: (context) => Configuracion()
+                    builder: (context) => CrearPlanta()
                   ));
                 },
               ),
@@ -108,14 +124,14 @@ class _HomeState extends State<Home>  {
             Divider(height: 10,),
             Container(
               height: 200,
-              child: FutureBuilder(
-                future: DBProvider.db.getListParams(),
+              child: StreamBuilder(
+                stream: blocPlanta.listaPlantas,
                 builder: (BuildContext context, AsyncSnapshot snapshot) {  
                   if(snapshot.hasData) {
                     return ListView.builder(                                     
                       itemCount: snapshot.data.length,
                       itemBuilder: (BuildContext context, int index) {                      
-                        ParamsModel param = snapshot.data[index];
+                        PlantaModel param = snapshot.data[index];
                         return ListTile(
                           leading: param.seleccionada == 1 
                             ? Icon(Icons.radio_button_checked, color: Colors.blueAccent, )
@@ -129,17 +145,17 @@ class _HomeState extends State<Home>  {
                             }
                           ),
                           onTap: () {
-                            DBProvider.db.selectPlanta(param.id);
-                            bloc.changePlantaController(param);
-                            Navigator.push(context, MaterialPageRoute(
-                              builder: (context) => Home()
-                            ));
+                            blocPlanta.seleccionarPlanta(param.id);
+                            Navigator.pop(context);
+                            // Navigator.push(context, MaterialPageRoute(
+                            //   builder: (context) => Home()
+                            // ));
                           },
                         );
                       },
                     );
                   } else {
-                    print('no hay datos');
+                    return CircularProgressIndicator();
                   }
                 },
               )

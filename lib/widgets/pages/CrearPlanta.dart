@@ -1,46 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:sispromovil/bd/ParamsModel.dart';
-import 'package:sispromovil/bd/Database.dart';
-import 'package:sispromovil/pages/Home.dart';
+import 'package:sispromovil/models/PlantaModel.dart';
+import 'package:sispromovil/widgets/pages/Home.dart';
+import 'package:sispromovil/blocs/plantas/BlocPlanta.dart';
+import 'package:sispromovil/blocs/plantas/BlocPlantaProvider.dart';
 
-class EditarPlanta extends StatefulWidget {
-  final ParamsModel planta;
-  EditarPlanta(this.planta);
-
+class CrearPlanta extends StatefulWidget {
+  static const String routeName = '/crearPlanta';
   @override
-  _EditarPlanta createState() => _EditarPlanta();
+  _CrearPlanta createState() => _CrearPlanta();
 }
 
-class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
+class _CrearPlanta extends State<CrearPlanta> with TickerProviderStateMixin {
   TextEditingController _plantaController = TextEditingController();
   TextEditingController _codigoController = TextEditingController();
   TextEditingController _servidorController = TextEditingController();
   TextEditingController _puertoController = TextEditingController();
   GlobalKey<FormState> _keyForm = GlobalKey<FormState>();
-
+  
   @override
   void initState() {
     super.initState();
-    setState(() {
-      _plantaController.text = widget.planta.planta;
-      _codigoController.text = widget.planta.codigo;
-      _servidorController.text = widget.planta.servidor;
-      _puertoController.text = widget.planta.puerto.toString();
-    });
   }
 
   void _guardarPlanta() {
-    _keyForm.currentState.save();
     final Map<String, dynamic> paramsMap = {
-      "id": widget.planta.id,
+      "id": 0,
       "planta": _plantaController.text,
       "codigo": _codigoController.text,
       "servidor": _servidorController.text,
       "puerto": int.parse(_puertoController.text),
-      "seleccionada": widget.planta.seleccionada
+      "seleccionada": 0
     };
-    ParamsModel params = ParamsModel.fromMap(paramsMap);
-    DBProvider.db.updateParams(params);
+    PlantaModel planta = PlantaModel.fromMap(paramsMap);
+    blocPlanta.agregarPlanta(planta);
     Navigator.push(context, MaterialPageRoute(
       builder: (context) => Home()
     ));
@@ -50,37 +42,7 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.planta.planta),
-        actions: <Widget>[
-          widget.planta.id != 1 
-          ? IconButton(            
-            icon: Icon(Icons.delete),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('Eliminar planta'),
-                    content: Text('¿Está seguro que quiere eliminar la planta?'),
-                    actions: <Widget>[
-                      IconButton(
-                        icon: Icon(Icons.check), 
-                        color: Colors.green, 
-                        onPressed: () {
-                          DBProvider.db.deleteParams(widget.planta.id);
-                          Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => Home()
-                          ));
-                        }),
-                      IconButton(icon: Icon(Icons.clear), color: Colors.red, onPressed: () => Navigator.pop(context),)
-                    ],
-                  );
-                }
-              );
-            },
-          )
-          : Center(child: Text(''),)
-        ],
+        title: Text('Nueva planta') ,
       ),
       body: Form(
         key: _keyForm,
@@ -163,4 +125,4 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
       )
     );
   }
-}
+} // final class _Configuracion

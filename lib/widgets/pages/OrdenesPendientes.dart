@@ -3,18 +3,14 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:sispromovil/models/PendientesModel.dart';
 import 'package:intl/intl.dart';
-import 'package:sispromovil/config/config.dart';
-
-const baseUrl = '${Config.baseUrl}/pendientes';
-// const baseUrl = 'http://192.168.1.71:3002/pendientes';
-// const baseUrl = 'http://192.168.0.9:3002/pendientes';
+import 'package:sispromovil/blocs/plantas/BlocPlanta.dart';
 
 class OrdenesPendientes extends StatefulWidget {
   static const String routeName = '/pendientes';
-  @override
-  _OrdenesPendientes createState() => _OrdenesPendientes();
-  }
   
+  @override
+  _OrdenesPendientes createState() =>_OrdenesPendientes();    
+}  
 
 class _OrdenesPendientes extends State<OrdenesPendientes> {
   PendientesModel itemsPendientes;
@@ -22,17 +18,39 @@ class _OrdenesPendientes extends State<OrdenesPendientes> {
   int parcialItems = 0;
   int desdeItem = 1;
   int cantRegistros = 30;
+  String baseUrl;
+  String plantaAnterior;
+  String plantaActual;
+  var client = http.Client();
 
   @override
-  void initState() {
+  void initState() { 
     super.initState();
-    _obtenerPendientes();
+    blocPlanta.servidor.listen((servidor) {
+      baseUrl = servidor + '/pendientes';
+      plantaActual = servidor;
+      _obtenerPendientes();
+    });
   }
 
-  void _obtenerPendientes() async {
-    var response = await http.get('$baseUrl?desde=$desdeItem&cantRegistros=$cantRegistros');
+  @override
+  void dispose() {
+    super.dispose();
+    client.close();
+    blocPlanta.servidor.drain();
+  }
+
+  void _obtenerPendientes() async {    
+    print('BaseUrl $baseUrl');
+    if(plantaAnterior != plantaActual) {
+      itemsPendientes = null;
+      parcialItems = 0;
+      totalItems = 0;
+    }
+    String url = '$baseUrl?desde=$desdeItem&cantRegistros=$cantRegistros';
+    var response = await client.get(url);    
     if(response.statusCode == 200) {
-      setState(() {
+      setState(() {        
         var decodeJson = jsonDecode(response.body);
         if(itemsPendientes == null) {
           itemsPendientes = PendientesModel.fromJson(decodeJson);
@@ -41,18 +59,20 @@ class _OrdenesPendientes extends State<OrdenesPendientes> {
           itemsPendientes.data.addAll(PendientesModel.fromJson(decodeJson).data);
         }
         parcialItems = itemsPendientes.data.length;
+        plantaAnterior = plantaActual;
       });
     } else {
       print('error');
     }    
   }
-
         
  @override
  Widget build(BuildContext context) {
   return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Flexible(
+        parcialItems > 0
+        ? Flexible(
           child: ListView.builder(
             itemCount: parcialItems > totalItems ? totalItems : parcialItems,
             itemBuilder: (BuildContext context, int index) {
@@ -103,7 +123,10 @@ class _OrdenesPendientes extends State<OrdenesPendientes> {
               }
             }
           )
-        ),        
+        )
+        : Center(
+          child: CircularProgressIndicator(),
+        )
       ],
     );
  }

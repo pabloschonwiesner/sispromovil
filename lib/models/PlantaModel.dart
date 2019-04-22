@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class ParamsModel {
+class PlantaModel {
   int id;
   String planta;
   String codigo;
@@ -8,9 +8,9 @@ class ParamsModel {
   int puerto;
   int seleccionada;
   
-  ParamsModel({this.id, this.planta, this.codigo, this.servidor, this.puerto, this.seleccionada});
+  PlantaModel({this.id, this.planta, this.codigo, this.servidor, this.puerto, this.seleccionada});
 
-  factory ParamsModel.fromMap(Map<String, dynamic> json) => ParamsModel(
+  factory PlantaModel.fromMap(Map<String, dynamic> json) => PlantaModel(
     id: json['id'],
     planta: json['planta'],
     codigo: json['codigo'],
@@ -28,12 +28,12 @@ class ParamsModel {
     "seleccionada": seleccionada
   };
 
-  ParamsModel paramsFromJson(String str) {
+  PlantaModel paramsFromJson(String str) {
     final jsonData = json.decode(str);
-    return ParamsModel.fromMap(jsonData);
+    return PlantaModel.fromMap(jsonData);
   }
 
-  String paramsToJson(ParamsModel data) {
+  String paramsToJson(PlantaModel data) {
     final result = data.toMap();
     return json.encode(result);
   }

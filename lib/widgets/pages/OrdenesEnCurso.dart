@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:sispromovil/models/EnCursoModel.dart';
 import 'package:http/http.dart' as http;
-import 'package:sispromovil/config/config.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:intl/intl.dart';
+import 'package:sispromovil/blocs/plantas/BlocPlanta.dart';
 
-const String baseUrl = '${Config.baseUrl}/enProceso';
+// const String baseUrl = '${Config.baseUrl}/enProceso';
 
 class OrdenesEnCurso extends StatefulWidget {
   static const String routeName = '/enCurso';
@@ -19,18 +19,30 @@ class _OrdenesEnCurso extends State<OrdenesEnCurso> {
   Duration ms = Duration(milliseconds: 1);
   EnCursoModel itemsEnCurso;
   var timer;
+  String baseUrl;
+  String plantaActual;
+  String plantaAnterior;
 
   @override 
   void initState() {
     super.initState();
-      _obtenerEnCurso();
-      timer = _iniciarTimer(5000);    
+      blocPlanta.servidor.listen((servidor) {
+        baseUrl = servidor + '/enProceso';
+        plantaActual = servidor;
+        if(timer != null) {
+          timer.cancel();
+          timer = _iniciarTimer(5000);
+        }
+        _obtenerEnCurso();
+        timer = _iniciarTimer(5000);    
+      });
   }
 
   @override
   void dispose() {
-    super.dispose();
     timer.cancel();
+    blocPlanta.servidor.drain();
+    super.dispose();
   }
 
   Timer _iniciarTimer(int milisegundos) {
@@ -39,12 +51,17 @@ class _OrdenesEnCurso extends State<OrdenesEnCurso> {
   }
 
   void _obtenerEnCurso() async {
+    if(plantaActual != plantaAnterior) {
+      itemsEnCurso = null;
+      totalItems = 0;
+    }
     var response = await http.get('$baseUrl');
     if(response.statusCode == 200) {
       setState(() {
         var decodeJson = jsonDecode(response.body);
         itemsEnCurso = EnCursoModel.fromJson(decodeJson);
         totalItems = itemsEnCurso.data.length;
+        plantaAnterior = plantaActual;
       });      
     } else {
       print('error');
@@ -61,11 +78,14 @@ class _OrdenesEnCurso extends State<OrdenesEnCurso> {
   }
 
   Widget _listaRecursos() {
-    double anchoPantalla =MediaQuery.of(context).size.width;
+    double anchoPantalla = MediaQuery.of(context).size.width;
     return totalItems > 0 
     ? Center(
-      child: ListView(
-        children: itemsEnCurso.data.map((recurso) => Card(
+      child: ListView.builder(
+        itemCount: itemsEnCurso.data.length,
+        itemBuilder: (BuildContext context, int index) {
+          var recurso = itemsEnCurso.data[index];
+          return Card(
           margin: EdgeInsets.fromLTRB(4,4,4,15),
           elevation: 10,
           child: Container(
@@ -142,7 +162,8 @@ class _OrdenesEnCurso extends State<OrdenesEnCurso> {
             ),
           )
 
-        )).toList()
+        );
+        }
       )
     )
     : Center(

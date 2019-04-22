@@ -4,8 +4,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:sispromovil/models/PendientesPlanificadasModel.dart';
 import 'package:intl/intl.dart';
+import 'package:sispromovil/blocs/plantas/BlocPlanta.dart';
 
-const String baseUrl = '${Config.baseUrl}/pendientesPlanificadas';
+// const String baseUrl = '${Config.baseUrl}/pendientesPlanificadas';
 
 class OrdenesPendientesPlanificadas extends StatefulWidget {
   static const String routeName = '/pendientesPlanificadas';
@@ -17,15 +18,35 @@ class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas
   PendientesPlanificadasModel itemsPendientesPlanificadas;
   int totalItems = 0;
   int parcialItems = 0;
+  String baseUrl;
+  String plantaActual;
+  String plantaAnterior;
+  var client = http.Client();
 
   @override
   void initState() {
     super.initState();
-    _obtenerPlanificadas();
+    blocPlanta.servidor.listen((servidor) {
+      baseUrl = servidor + '/pendientesPlanificadas';
+      plantaActual = servidor;
+      _obtenerPlanificadas();
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    client.close();
+    blocPlanta.servidor.drain();
   }
 
   void _obtenerPlanificadas() async {
-    var response = await http.get('$baseUrl');
+    if(plantaActual != plantaAnterior) {
+      itemsPendientesPlanificadas = null;
+      totalItems = 0;
+      parcialItems = 0;
+    }
+    var response = await client.get('$baseUrl');
     if(response.statusCode == 200) {
       setState(() {
         var decodeJson = jsonDecode(response.body);
@@ -36,6 +57,7 @@ class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas
           itemsPendientesPlanificadas.data.addAll(PendientesPlanificadasModel.fromJson(decodeJson).data);
         }
         parcialItems =itemsPendientesPlanificadas.data.length;
+        plantaAnterior = plantaActual;
       });      
     } else {
       print('error');

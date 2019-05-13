@@ -16,7 +16,6 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
   TextEditingController _plantaController = TextEditingController();
   TextEditingController _codigoController = TextEditingController();
   TextEditingController _servidorController = TextEditingController();
-  TextEditingController _puertoController = TextEditingController();
   GlobalKey<FormState> _keyForm = GlobalKey<FormState>();
 
   @override
@@ -26,7 +25,6 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
       _plantaController.text = widget.planta.planta;
       _codigoController.text = widget.planta.codigo;
       _servidorController.text = widget.planta.servidor;
-      _puertoController.text = widget.planta.puerto.toString();
     });
   }
 
@@ -37,7 +35,6 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
       "planta": _plantaController.text,
       "codigo": _codigoController.text,
       "servidor": _servidorController.text,
-      "puerto": int.parse(_puertoController.text),
       "seleccionada": widget.planta.seleccionada
     };
     PlantaModel planta = PlantaModel.fromMap(paramsMap);
@@ -135,21 +132,21 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
                   });
                 },
               ),
-              TextFormField(  
-                controller: _puertoController,
-                autocorrect: false,
-                decoration: InputDecoration(
-                  hintText: 'Puerto Servidor Web',
-                  labelText: 'Puerto Servidor Web'
-                ),
-                keyboardType: TextInputType.number,
+              // TextFormField(  
+              //   controller: _puertoController,
+              //   autocorrect: false,
+              //   decoration: InputDecoration(
+              //     hintText: 'Puerto Servidor Web',
+              //     labelText: 'Puerto Servidor Web'
+              //   ),
+              //   keyboardType: TextInputType.number,
                 
-                onSaved: (String value) {
-                  setState(() {
-                    _puertoController.text = value;
-                  });
-                },
-              ),
+              //   onSaved: (String value) {
+              //     setState(() {
+              //       _puertoController.text = value;
+              //     });
+              //   },
+              // ),
               SizedBox(height: 20,),
               RaisedButton(
                 child: Text('Guardar'),

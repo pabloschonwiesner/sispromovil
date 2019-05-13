@@ -1,91 +1,137 @@
 import 'package:flutter/material.dart';
-import 'package:sispromovil/blocs/plantas/BlocPlantaProvider.dart';
+import 'package:sispromovil/blocs/busqueda/BlocBusqueda.dart';
+import 'package:sispromovil/models/BusquedaModel.dart';
 
-class Search extends StatefulWidget {
-  @override
-  _Search createState() => _Search();
-}
-
-class _Search extends State<Search> with TickerProviderStateMixin {
-  TextEditingController _searchController =TextEditingController();
-  String inputValue = '';
-  BlocPlanta _blocPlanta;
+class Search extends SearchDelegate {
+  
 
   @override
-  void initState() {
-    super.initState();
+  List<Widget> buildActions(BuildContext context) {
+    return <Widget>[IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      )
+    ];
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _blocPlanta = BlocPlantaProvider.of(context);
-  }
-
-  @override 
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          color: Theme.of(context).primaryColor,
-          onPressed: () => Navigator.pop(context, false),
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: AnimatedIcon(
+          icon: AnimatedIcons.menu_arrow,
+          progress: transitionAnimation,
         ),
-        actions: <Widget>[
-          Flexible(
-          child:
-            Container(
-              height: 200,
-              child: Center(
-                child: Text('prueba')
-                // StreamBuilder(
-                //   initialData: '',
-                //   stream: ,
-                //   builder: (context, snapshot) {
-                //     return TextField(     
-                //       keyboardType: TextInputType.text,  
-                //       textInputAction: TextInputAction.send,   
-                //       autocorrect: false,  
-                //       decoration: InputDecoration(
-                //         hintText: 'OT, Cliente o Producto',
-                //         hintStyle: TextStyle(color: Colors.grey[500], fontStyle: FontStyle.italic),
-                //         contentPadding: EdgeInsets.only(left: 60),
-                //         border: InputBorder.none,
-                //         errorText: snapshot.error,
-                //       ),
-                //       style: TextStyle( backgroundColor: Colors.white),                
-                //       controller: _searchController,
-                //       autofocus: true,
-                //       onChanged: bloc.changeSearchController,
-                //       // onSubmitted: (String texto) {
-                //       //   setState(() {
-                //       //     inputValue = texto;
-                //       //   });
-                //       //   print(inputValue);
-                //       // },
-                //     );
-                //   }
-                // )
-              ),
-            ),
-          ),
-          IconButton(
-            icon: Icon(Icons.cancel),
-            color: Theme.of(context).primaryColor,
-            onPressed: () => _searchController.text = '',
-          )
-
-        ],
-      ),
-      // body: Container(
-      //   child: StreamBuilder(
-      //     stream: bloc.email,
-      //     builder: (context, snapshot) {
-      //       Text()
-      //     },
-      //   ),
-      // ),
+      onPressed: () {
+        close(context, null);
+      },
     );
   }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: Text(this.query)
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        StreamBuilder(
+          stream: blocBusquedas.filtro,
+          builder: (context, snapshot) {
+            if(snapshot.hasData && snapshot.data != '') {
+              return Dismissible(
+                key: Key('filtro'),
+                onDismissed: (direction) {
+                  blocBusquedas.changeFiltro('');
+                  close(context, '');
+                },
+                child: Ink(
+                  color: Colors.lightBlue[100],
+                  child: ListTile(  
+                    title: RichText(
+                      maxLines: 2,
+                      text: TextSpan(
+                        text: 'Filtro aplicado: \n',                        
+                        style: TextStyle(fontStyle: FontStyle.italic, fontSize: 11, color: Colors.black),
+                        children: [
+                          TextSpan(
+                            text: snapshot.data,
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black)
+                          )
+                        ]
+                      ),
+                      
+                    ),
+                    onTap: () {
+                      query = snapshot.data;
+                      blocBusquedas.changeFiltro(query);
+                      close(context, this.query);
+                    }
+                  ),
+                ),
+              );
+            } else {
+              return Container(width: 0, height: 0,);
+            }
+          },
+        ),
+        StreamBuilder(
+          stream: blocBusquedas.listaBusquedas,
+          builder: (context, snapshot) {
+            if(snapshot.hasData) {          
+              return Expanded(
+                flex: 1,
+                child: ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  BusquedaModel busqueda = snapshot.data[index];
+                  return Dismissible(
+                    key: Key(busqueda.id.toString()),
+                    onDismissed: (direction) {
+                      blocBusquedas.borrarBusqueda(busqueda.id);
+                    },
+                    child: ListTile(
+                      leading: Icon(Icons.history),
+                      title: Text(busqueda.busqueda),
+                      trailing: IconButton(
+                        icon: Icon(Icons.arrow_upward),
+                        onPressed: () {
+                          query = busqueda.busqueda;
+                        },
+                      ),
+                      onTap: () {
+                        query = busqueda.busqueda;
+                        blocBusquedas.changeFiltro(query);
+                        close(context, this.query);
+                      },
+                    )
+                  );
+                },
+              )
+              );
+              
+            } else {
+              return Container(height: 0, width: 0,);
+            }
+          }
+        )
+      ],
+    );
+  }
+  
+  @override
+  void showResults(BuildContext context) {
+    blocBusquedas.changeFiltro(query);
+    blocBusquedas.agregarBusqueda(query);
+    close(context, null);
+    super.showResults(context);
+  }
+  
+
 }

@@ -14,7 +14,6 @@ class _CrearPlanta extends State<CrearPlanta> with TickerProviderStateMixin {
   TextEditingController _plantaController = TextEditingController();
   TextEditingController _codigoController = TextEditingController();
   TextEditingController _servidorController = TextEditingController();
-  TextEditingController _puertoController = TextEditingController();
   GlobalKey<FormState> _keyForm = GlobalKey<FormState>();
   
   @override
@@ -28,7 +27,6 @@ class _CrearPlanta extends State<CrearPlanta> with TickerProviderStateMixin {
       "planta": _plantaController.text,
       "codigo": _codigoController.text,
       "servidor": _servidorController.text,
-      "puerto": int.parse(_puertoController.text),
       "seleccionada": 0
     };
     PlantaModel planta = PlantaModel.fromMap(paramsMap);
@@ -93,21 +91,6 @@ class _CrearPlanta extends State<CrearPlanta> with TickerProviderStateMixin {
                 onSaved: (String value) {
                   setState(() {
                     _servidorController.text = value;
-                  });
-                },
-              ),
-              TextFormField(  
-                controller: _puertoController,
-                autocorrect: false,
-                decoration: InputDecoration(
-                  hintText: 'Puerto Servidor Web',
-                  labelText: 'Puerto Servidor Web'
-                ),
-                keyboardType: TextInputType.number,
-                
-                onSaved: (String value) {
-                  setState(() {
-                    _puertoController.text = value;
                   });
                 },
               ),

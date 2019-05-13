@@ -22,7 +22,7 @@ class _HomeState extends State<Home>  {
   @override
   void initState() {
     super.initState();    
-    // blocPlanta.llenarListaPlantas();
+    // blocPlanta.initialData();
   }
 
   @override
@@ -65,11 +65,12 @@ class _HomeState extends State<Home>  {
           IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => Search()
-                ));
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => Search()
+              //   ));
+              showSearch(context: context, delegate: Search());
             },
           ),
           Stack(
@@ -147,9 +148,6 @@ class _HomeState extends State<Home>  {
                           onTap: () {
                             blocPlanta.seleccionarPlanta(param.id);
                             Navigator.pop(context);
-                            // Navigator.push(context, MaterialPageRoute(
-                            //   builder: (context) => Home()
-                            // ));
                           },
                         );
                       },

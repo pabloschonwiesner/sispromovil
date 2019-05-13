@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:sispromovil/config/config.dart';
 import 'package:sispromovil/models/FinalizadasModel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:sispromovil/widgets/pages/OTFinalizada.dart';
+import 'package:sispromovil/widgets/pages/DetalleOT.dart';
 import 'package:intl/intl.dart';
 import 'package:sispromovil/blocs/plantas/BlocPlanta.dart';
-
-// String urlBase = '${Config.baseUrl}/finalizadas';
-
+import 'package:sispromovil/blocs/busqueda/BlocBusqueda.dart';
 
 class OrdenesFinalizadas extends StatefulWidget {
   static const String routeName = '/finalizadas';
@@ -23,10 +20,10 @@ class _OrdenesFinalizadas extends State<OrdenesFinalizadas> {
   int desdeItem = 1;
   int cantRegistros = 30;
   FinalizadasModel itemsFinalizados;
-  var client = http.Client();
   String baseUrl;
   String plantaAnterior;
   String plantaActual;
+  String filtroBusq = '';
 
   @override
   void initState() {
@@ -34,6 +31,12 @@ class _OrdenesFinalizadas extends State<OrdenesFinalizadas> {
     blocPlanta.servidor.listen((servidor) {
       baseUrl = servidor + '/finalizadas';
       plantaActual = servidor;
+      plantaAnterior = servidor;
+      _obtenerFinalizadas();
+    });
+
+    blocBusquedas.filtro.listen((filtro) {
+      filtroBusq = filtro;
       _obtenerFinalizadas();
     });
   }
@@ -41,12 +44,11 @@ class _OrdenesFinalizadas extends State<OrdenesFinalizadas> {
   @override
   void dispose() {
     super.dispose();
-    client.close();
     blocPlanta.servidor.drain();
   }
 
   void _obtenerFinalizadas() async {
-    var response = await client.get('$baseUrl?desde=$desdeItem&cantRegistros=$cantRegistros');
+    var response = await http.get('$baseUrl?desde=$desdeItem&cantRegistros=$cantRegistros');
     if(plantaAnterior != plantaActual) {
       itemsFinalizados = null;
       totalItems = 0;
@@ -58,7 +60,6 @@ class _OrdenesFinalizadas extends State<OrdenesFinalizadas> {
         var decodeJson = jsonDecode(response.body);
         if(itemsFinalizados == null) {
           itemsFinalizados = FinalizadasModel.fromJson(decodeJson);
-          print(itemsFinalizados.totalRegistros);
           totalItems = itemsFinalizados.totalRegistros;
         } else {
           itemsFinalizados.data.addAll(FinalizadasModel.fromJson(decodeJson).data);
@@ -66,6 +67,12 @@ class _OrdenesFinalizadas extends State<OrdenesFinalizadas> {
         parcialItems = itemsFinalizados.data.length;
         plantaAnterior = plantaActual;
       });
+
+      if(filtroBusq.isNotEmpty && itemsFinalizados.data.isNotEmpty) {
+        itemsFinalizados.data.retainWhere((maquina) {
+          return maquina.id == filtroBusq || maquina.cliente.toLowerCase().contains(filtroBusq) || maquina.trabajo.toLowerCase().contains(filtroBusq);
+        });
+      } 
     } else {
       print('error');
     }
@@ -95,7 +102,7 @@ class _OrdenesFinalizadas extends State<OrdenesFinalizadas> {
                   onTap: () { Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => OTFinalizada(id: ot.id, subID: ot.subId)
+                      builder: (context) => DetalleOT(id: ot.id, subID: ot.subId, cliente: ot.cliente, producto: ot.trabajo, cantPedida: ot.cantidadProducto, fechaOT: ot.fechaOT, fechaEntrega: ot.fechaEntrega)
                     ));
                   },
                   child: Card(

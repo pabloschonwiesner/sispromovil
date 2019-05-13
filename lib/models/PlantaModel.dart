@@ -5,17 +5,15 @@ class PlantaModel {
   String planta;
   String codigo;
   String servidor;
-  int puerto;
   int seleccionada;
   
-  PlantaModel({this.id, this.planta, this.codigo, this.servidor, this.puerto, this.seleccionada});
+  PlantaModel({this.id, this.planta, this.codigo, this.servidor,  this.seleccionada});
 
   factory PlantaModel.fromMap(Map<String, dynamic> json) => PlantaModel(
     id: json['id'],
     planta: json['planta'],
     codigo: json['codigo'],
     servidor: json['servidor'],
-    puerto: json['puerto'],
     seleccionada: json['seleccionada']
   );
 
@@ -24,7 +22,6 @@ class PlantaModel {
     "planta": planta,
     "codigo": codigo,
     "servidor": servidor,
-    "puerto": puerto,
     "seleccionada": seleccionada
   };
 

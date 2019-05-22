@@ -6,6 +6,7 @@ import 'package:sispromovil/widgets/pages/OrdenesPendientesPlanificadas.dart';
 import 'package:sispromovil/widgets/pages/OrdenesEnCurso.dart';
 import 'package:sispromovil/widgets/pages/OrdenesFinalizadas.dart';
 import 'package:sispromovil/blocs/plantas/BlocPlantaProvider.dart';
+import 'package:sispromovil/widgets/pages/Splash.dart';
 
 void main() => runApp(MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -15,7 +16,7 @@ void main() => runApp(MaterialApp(
         backgroundColor: Colors.grey[300]
       ),
       home: BlocPlantaProvider(
-        child: Home(),
+        child: Splash(),
       ),
       routes: <String, WidgetBuilder> {
         OrdenesPendientes.routeName: (BuildContext context) => OrdenesPendientes(),

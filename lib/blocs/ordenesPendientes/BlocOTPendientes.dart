@@ -1,96 +1,62 @@
 import 'package:rxdart/rxdart.dart';
 import 'package:sispromovil/models/PendientesModel.dart';
 import 'package:sispromovil/repositories/otPendientes/OT_Pendientes_Repository.dart';
-import 'package:sispromovil/blocs/plantas/BlocPlanta.dart';
+import 'package:sispromovil/repositories/plantas/Plantas_Repository.dart';
 
 
 class BlocOTPendientes {
-  PendientesModel _listaOTs;
-  String urlData = '';
-  OTPendientesRepository _repository = OTPendientesRepository();
-  BehaviorSubject<PendientesModel> _listaOTPendientes = BehaviorSubject<PendientesModel>();
+  static final BlocOTPendientes _bloc = new BlocOTPendientes._internal();
+  BehaviorSubject<PendientesModel> _otPendientes = BehaviorSubject<PendientesModel>();
+  BehaviorSubject<PendientesModel> _otPendientesFiltradas = BehaviorSubject<PendientesModel>();
   BehaviorSubject<String> _filtro = BehaviorSubject<String>();
-  BehaviorSubject<String> _servidor = BehaviorSubject<String>();
-  BehaviorSubject<String> _url = BehaviorSubject<String>();
-  BehaviorSubject<bool> _isLoading = BehaviorSubject<bool>.seeded(false);
-  // BehaviorSubject<int> _parcialItems = BehaviorSubject<int>();
-  BehaviorSubject<int> _desdeItem = BehaviorSubject<int>.seeded(1);
+  PlantasRepository _repoPlantas = PlantasRepository();
+  OTPendientesRepository _repoOtPendientes = OTPendientesRepository();
 
-  BlocOTPendientes() {
-    initialData();
+  factory BlocOTPendientes() {
+    return _bloc;
   }
+
+  BlocOTPendientes._internal();
 
   void initialData() {
-    filtro.add('');
-    // url.listen((ruta) => print(ruta));
-    // _servidor.listen((onData) => print('Prueba: $onData'));
-    // llenarListaOTPendientes();
+    
+    filtro.listen((filtro) => getOtPendientes());
+    if(_otPendientes.value == null)
+    getOtPendientes();
   }
 
-  BehaviorSubject<PendientesModel> get listaOTPendientes => _listaOTPendientes.stream;
-  BehaviorSubject<String> get servidor => _servidor.stream;
+  BehaviorSubject<PendientesModel> get pendientesFiltradas => _otPendientesFiltradas;
+  BehaviorSubject<PendientesModel> get pendientes => _otPendientes.stream;
   BehaviorSubject<String> get filtro => _filtro.stream;
-  BehaviorSubject<String> get url => _url.stream;
-  BehaviorSubject<bool> get isLoading => _isLoading.stream;
-  // BehaviorSubject<int> get parcialItems => _parcialItems.stream;
-  BehaviorSubject<int> get desdeItem => _desdeItem.stream;
 
-  Function(String) get changeServidor => _servidor.sink.add;
   Function(String) get changeFiltro => _filtro.sink.add;
-  Function(bool) get changeIsLoading => _isLoading.sink.add;
-  // Function(int) get changeParcialItems => _parcialItems.sink.add;
-  Function(int) get changeDesdeItem => _desdeItem.sink.add;
-  
 
-
-  Stream<String> get changeUrl => Observable.combineLatest3(
-    servidor, filtro, desdeItem, (serv, fil, desde) {
-      print('Serv: $serv // Fil: $fil // Desde: $desde ');
-      String url;
-      if(fil.toString().isNotEmpty) {
-        url = '$serv/pendientes?desde=$desde&cantRegistros=30&filtro=$fil';
-        _listaOTs = null;
-      } else {
-        url = '$serv/pendientes?desde=$desde&cantRegistros=30';
-      }
-      print('Url desde el bloc: $url');
-      urlData = url;
-      _url.sink.add(url);      
-    });
-
-  void llenarListaOTPendientes()  async {  
-    url.listen((data) {
-      urlData = data;
-      print('Desde listener $urlData');
-    });
-    print('UrlData: $urlData');
-    PendientesModel temp = await _repository.fetchAllOTPendientes(urlData);
-    if(_listaOTs == null) {
-      _listaOTs = temp;
-    } else {
-      _listaOTs.data.addAll(temp.data);
-    }
-  //   changeParcialItems(_listaOTs.data.length);
-    _listaOTPendientes.sink.add(_listaOTs);
+  void getOtPendientes({int desde = 1 }) async {
+    String url;
+    _otPendientes.value = null;
+    _repoPlantas.getPlantaSelect().then((planta) {
+      url = '${planta.servidor}/pendientes?desde=$desde&cantRegistros=300';
+      _repoOtPendientes.fetchAllOTPendientes(url).then((ots) {
+        _otPendientes.sink.add(ots);        
+        if(_filtro.value != null && _filtro.value != '') {
+          PendientesModel aux = ots;
+          aux.data = _otPendientes.value.data.where((ot) => 
+            ot.id == _filtro.value || 
+            ot.cliente.toLowerCase().contains(_filtro.value.toLowerCase()) || 
+            ot.trabajo.toLowerCase().contains(_filtro.value.toLowerCase())).toList();
+          _otPendientesFiltradas.sink.add(aux);
+        } else {
+          _otPendientesFiltradas.sink.add(ots);
+        }
+      });
+    });    
   }
 
-  void dispose() async {
-    await _listaOTPendientes.drain();
-    _listaOTPendientes.close();
-    await _filtro.drain();
+  void dispose() {
+    _otPendientes.close();
+    _otPendientesFiltradas.close();
     _filtro.close();
-    await _servidor.drain();
-    _servidor.close();
-    await _url.drain();
-    _url.close();
-    await _isLoading.drain();
-    _isLoading.close();
-    // await _parcialItems.drain();
-    // _parcialItems.close();
-    await _desdeItem.drain();
-    _desdeItem.close();
   }
-
 }
 
-var blocOTPendientes = BlocOTPendientes();
+BlocOTPendientes blocPendientes = BlocOTPendientes();

@@ -118,7 +118,7 @@ class _DetalleOT extends State<DetalleOT> {
                       padding: EdgeInsets.only(left: 2),
                       child: FilterChip(
                         backgroundColor: _detalleChecks.data[0].checkList[index].valor == "0" ? Colors.grey[300] : Colors.lightGreenAccent,
-                        labelStyle: TextStyle(fontSize: 12, color: Colors.black),
+                        labelStyle: TextStyle(fontSize: 12, color: Colors.black,),
                         label: Padding(
                           padding: EdgeInsets.all(4),
                           child: Text(_detalleChecks.data[0].checkList[index].clave)),
@@ -135,15 +135,30 @@ class _DetalleOT extends State<DetalleOT> {
             Flexible(
               flex: 1,
               child: ListView.builder(
-                itemCount: _detalleChecks != null ? _detalleChecks.data[0].checkList.length : 0,
+                itemCount: _detalleChecks != null ? _detalleChecks.data[0].geop.length : 0,
                 itemBuilder: (context, index) {
                   if(_detalleChecks == null) {
                     return Center(child: CircularProgressIndicator());
                   } else {
-                    return  Row(
+                    return  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text('${_detalleChecks.data[0].geop[index].clave}:   ', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),),
-                        Text('${_detalleChecks.data[0].geop[index].valor}', overflow: TextOverflow.ellipsis ,style: TextStyle(fontSize: 14))
+                        RichText(
+                          textAlign: TextAlign.start,
+                          overflow: TextOverflow.ellipsis,
+                          text: TextSpan(
+                            text: '${_detalleChecks.data[0].geop[index].clave}:   ',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),                            
+                            children: <TextSpan>[
+                              TextSpan(
+                                text: '${_detalleChecks.data[0].geop[index].valor}',
+                                style: TextStyle(fontSize: 13, color: Colors.black, fontWeight: FontWeight.normal)
+                              )
+                            ]
+                          )
+                        )
+                        // Text('${_detalleChecks.data[0].geop[index].clave}:   ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),),
+                        // Text('${_detalleChecks.data[0].geop[index].valor}', overflow: TextOverflow.ellipsis ,style: TextStyle(fontSize: 14))
                       ],
                     );
                   }                  

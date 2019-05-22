@@ -15,7 +15,7 @@ class PlantasRepository {
     return plantaProvider.getPlanta(id);
   }
 
-  Future<PlantaModel> getPlantaSelect() {
+  Future getPlantaSelect() {
     return plantaProvider.getPlantaSelect();
   }
 

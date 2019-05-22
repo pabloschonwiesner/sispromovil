@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:sispromovil/blocs/busqueda/BlocBusqueda.dart';
 import 'package:sispromovil/models/BusquedaModel.dart';
+import 'package:sispromovil/blocs/ordenesPendientes/BlocOTPendientes.dart';
+import 'package:sispromovil/blocs/ordenesPendientesPlanificadas/BlocOTPendientesPlanificadas.dart';
+import 'package:sispromovil/blocs/ordenesEnCurso/BlocOTEnCurso.dart';
+import 'package:sispromovil/blocs/ordenesFinalizadas/BlocOTFinalizadas.dart';
+import 'package:sispromovil/blocs/plantas/BlocPlanta.dart';
 
-class Search extends SearchDelegate {
-  
+
+class Search extends SearchDelegate {  
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -42,13 +47,13 @@ class Search extends SearchDelegate {
     return Column(
       children: <Widget>[
         StreamBuilder(
-          stream: blocBusquedas.filtro,
+          stream: blocPendientes.filtro,
           builder: (context, snapshot) {
             if(snapshot.hasData && snapshot.data != '') {
               return Dismissible(
                 key: Key('filtro'),
                 onDismissed: (direction) {
-                  blocBusquedas.changeFiltro('');
+                  cambiarFiltros();
                   close(context, '');
                 },
                 child: Ink(
@@ -70,7 +75,7 @@ class Search extends SearchDelegate {
                     ),
                     onTap: () {
                       query = snapshot.data;
-                      blocBusquedas.changeFiltro(query);
+                      cambiarFiltros();
                       close(context, this.query);
                     }
                   ),
@@ -107,15 +112,14 @@ class Search extends SearchDelegate {
                       ),
                       onTap: () {
                         query = busqueda.busqueda;
-                        blocBusquedas.changeFiltro(query);
+                        cambiarFiltros();
                         close(context, this.query);
                       },
                     )
                   );
                 },
               )
-              );
-              
+              );              
             } else {
               return Container(height: 0, width: 0,);
             }
@@ -127,11 +131,19 @@ class Search extends SearchDelegate {
   
   @override
   void showResults(BuildContext context) {
-    blocBusquedas.changeFiltro(query);
+    cambiarFiltros();
     blocBusquedas.agregarBusqueda(query);
+    this.query = '';
     close(context, null);
     super.showResults(context);
   }
   
+  void cambiarFiltros() {
+    blocPendientes.changeFiltro(query);
+    blocPendientesPlanificadas.changeFiltro(query);
+    blocEnCurso.changeFiltro(query);
+    blocFinalizadas.changeFiltro(query);
+    blocPlanta.changeFiltro(query);
+  }
 
 }

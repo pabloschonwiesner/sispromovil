@@ -1,7 +1,6 @@
 import 'package:rxdart/rxdart.dart';
 import 'package:sispromovil/repositories/busquedas/Busquedas_Repository.dart';
 import 'package:sispromovil/models/BusquedaModel.dart';
-import 'package:sispromovil/blocs/ordenesPendientes/BlocOTPendientes.dart';
 
 
 class BlocBusqueda {
@@ -31,7 +30,7 @@ class BlocBusqueda {
     _busquedas = await _repository.getBusquedas();
     _listaBusquedas.sink.add(_busquedas);
     _filtro.listen((filtro) {
-      blocOTPendientes.changeFiltro(filtro);
+      // blocOTPendientes.changeFiltro(filtro);
     });
   }
 
@@ -48,7 +47,7 @@ class BlocBusqueda {
   void guardarFiltros(String query) async {
     changeFiltro(query);
     _filtro.listen((data) {
-      blocOTPendientes.changeFiltro(data);
+      // blocOTPendientes.changeFiltro(data);
     });
   }
 

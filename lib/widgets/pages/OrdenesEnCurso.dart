@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sispromovil/models/EnCursoModel.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'dart:async';
 import 'package:intl/intl.dart';
-import 'package:sispromovil/blocs/plantas/BlocPlanta.dart';
-import 'package:sispromovil/blocs/busqueda/BlocBusqueda.dart';
 import 'package:sispromovil/widgets/pages/DetalleOT.dart';
+import 'package:sispromovil/blocs/ordenesEnCurso/BlocOTEnCurso.dart';
 
 class OrdenesEnCurso extends StatefulWidget {
   static const String routeName = '/enCurso';
@@ -15,74 +11,16 @@ class OrdenesEnCurso extends StatefulWidget {
 }
 
 class _OrdenesEnCurso extends State<OrdenesEnCurso> {
-  int totalItems = 0;
-  Duration ms = Duration(milliseconds: 1);
-  EnCursoModel itemsEnCurso;
-  var timer;
-  String baseUrl;
-  String plantaActual;
-  String plantaAnterior;
-  String filtroBusq = '';
 
   @override 
   void initState() {
+    blocEnCurso.initialData();
     super.initState();
-      blocPlanta.servidor.listen((servidor) {
-        baseUrl = servidor + '/enProceso';
-        plantaActual = servidor;
-        plantaAnterior = servidor;
-        if(timer != null) {
-          timer.cancel();
-          timer = _iniciarTimer(5000);
-        }
-        _obtenerEnCurso();
-        timer = _iniciarTimer(5000);    
-      });
-
-      blocBusquedas.filtro.listen((filtro) {
-        filtroBusq = filtro;
-        _obtenerEnCurso();      
-    });
   }
 
   @override
   void dispose() {
-    timer.cancel();
     super.dispose();
-  }
-
-  Timer _iniciarTimer(int milisegundos) {
-    var duracion = milisegundos == null ? 30000 : ms * milisegundos;
-    return Timer.periodic(duracion, (Timer timer) => _obtenerEnCurso());
-  }
-
-  void _obtenerEnCurso() async {
-    if(plantaActual != plantaAnterior) {
-      itemsEnCurso = null;
-      totalItems = 0;
-    }
-    var response = await http.get('$baseUrl');
-    if(response.statusCode == 200) {
-      if(mounted) {
-        setState(() {
-          var decodeJson = jsonDecode(response.body);
-          itemsEnCurso = EnCursoModel.fromJson(decodeJson);
-          totalItems = itemsEnCurso.data.length;
-          plantaAnterior = plantaActual;
-        }); 
-      }
-           
-
-      if(filtroBusq.isNotEmpty && itemsEnCurso != null) {
-        itemsEnCurso.data.retainWhere((maquina) {
-          return maquina.id == filtroBusq || maquina.descripcionCliente.toLowerCase().contains(filtroBusq) || maquina.trabajo.toLowerCase().contains(filtroBusq);
-        });
-      } 
-    } else {
-      print('error');
-    }
-
-
   }
 
   String _hsSexagesimales(double hs) {
@@ -92,10 +30,9 @@ class _OrdenesEnCurso extends State<OrdenesEnCurso> {
     return hs.floor().toString() + ':' + strMinutos; 
   }
 
-  Widget _listaRecursos() {
+  Widget _listaRecursos(EnCursoModel itemsEnCurso) {
     double anchoPantalla = MediaQuery.of(context).size.width;
-    return totalItems > 0 
-    ? Center(
+    return  Center(
       child: ListView.builder(
         itemCount: itemsEnCurso.data.length,
         itemBuilder: (BuildContext context, int index) {
@@ -187,20 +124,30 @@ class _OrdenesEnCurso extends State<OrdenesEnCurso> {
           );
         }
       )
-    )
-    : Center(
-      child: CircularProgressIndicator(),
     );
   }
 
  @override
  Widget build(BuildContext context) {   
-  return Column(
-    children: <Widget>[
-      Flexible(
-        child: _listaRecursos()       
-      )
-    ],
+  return StreamBuilder(
+    stream: blocEnCurso.enCursoFiltradas,
+    builder: (context, snapshot) {
+      if(!snapshot.hasData) {
+        return Container(
+          child: Center(
+            child: CircularProgressIndicator()
+          )
+        );
+      } else {
+        return Column(
+          children: <Widget>[
+            Flexible(
+              child: _listaRecursos(snapshot.data)       
+            )
+          ],
+        );
+      }
+    },
   );
  }
 }

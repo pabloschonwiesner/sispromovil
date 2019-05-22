@@ -47,6 +47,7 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: true,
       appBar: AppBar(
         title: Text(widget.planta.planta),
         actions: <Widget>[
@@ -80,84 +81,86 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
           : Center(child: Text(''),)
         ],
       ),
-      body: Form(
-        key: _keyForm,
-        child: Padding(
-          padding: EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              TextFormField(  
-                controller: _plantaController,
-                autocorrect: false,
-                decoration: InputDecoration(
-                  hintText: 'Nombre de la planta',
-                  labelText: 'Planta'
+      body: SingleChildScrollView(
+              child: Form(
+          key: _keyForm,
+          child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                TextFormField(  
+                  controller: _plantaController,
+                  autocorrect: false,
+                  decoration: InputDecoration(
+                    hintText: 'Nombre de la planta',
+                    labelText: 'Planta'
+                  ),
+                  keyboardType: TextInputType.text,
+                  
+                  onSaved: (String value) {
+                    setState(() {
+                      _plantaController.text = value;
+                    });
+                  },
                 ),
-                keyboardType: TextInputType.text,
-                
-                onSaved: (String value) {
-                  setState(() {
-                    _plantaController.text = value;
-                  });
-                },
-              ),
-              TextFormField(  
-                controller: _codigoController,
-                autocorrect: false,
-                decoration: InputDecoration(
-                  hintText: 'Codigo de cliente o promocion',
-                  labelText: 'Codigo'
+                TextFormField(  
+                  controller: _codigoController,
+                  autocorrect: false,
+                  decoration: InputDecoration(
+                    hintText: 'Codigo de cliente o promocion',
+                    labelText: 'Codigo'
+                  ),
+                  keyboardType: TextInputType.text,
+                  
+                  onSaved: (String value) {
+                    setState(() {
+                      _codigoController.text = value;
+                    });
+                  },
                 ),
-                keyboardType: TextInputType.text,
-                
-                onSaved: (String value) {
-                  setState(() {
-                    _codigoController.text = value;
-                  });
-                },
-              ),
-              TextFormField(  
-                controller: _servidorController,
-                autocorrect: false,
-                decoration: InputDecoration(
-                  hintText: 'Ruta Servidor Web',
-                  labelText: 'Servidor Web'
+                TextFormField(  
+                  controller: _servidorController,
+                  autocorrect: false,
+                  decoration: InputDecoration(
+                    hintText: 'Ruta Servidor Web',
+                    labelText: 'Servidor Web'
+                  ),
+                  keyboardType: TextInputType.text,
+                  
+                  onSaved: (String value) {
+                    setState(() {
+                      _servidorController.text = value;
+                    });
+                  },
                 ),
-                keyboardType: TextInputType.text,
-                
-                onSaved: (String value) {
-                  setState(() {
-                    _servidorController.text = value;
-                  });
-                },
-              ),
-              // TextFormField(  
-              //   controller: _puertoController,
-              //   autocorrect: false,
-              //   decoration: InputDecoration(
-              //     hintText: 'Puerto Servidor Web',
-              //     labelText: 'Puerto Servidor Web'
-              //   ),
-              //   keyboardType: TextInputType.number,
-                
-              //   onSaved: (String value) {
-              //     setState(() {
-              //       _puertoController.text = value;
-              //     });
-              //   },
-              // ),
-              SizedBox(height: 20,),
-              RaisedButton(
-                child: Text('Guardar'),
-                elevation: 10,
-                textColor: Colors.white,
-                color: Theme.of(context).primaryColor,
-                onPressed: () => _guardarPlanta(),
-              )
-            ],
-          ),
-        )
+                // TextFormField(  
+                //   controller: _puertoController,
+                //   autocorrect: false,
+                //   decoration: InputDecoration(
+                //     hintText: 'Puerto Servidor Web',
+                //     labelText: 'Puerto Servidor Web'
+                //   ),
+                //   keyboardType: TextInputType.number,
+                  
+                //   onSaved: (String value) {
+                //     setState(() {
+                //       _puertoController.text = value;
+                //     });
+                //   },
+                // ),
+                SizedBox(height: 20,),
+                RaisedButton(
+                  child: Text('Guardar'),
+                  elevation: 10,
+                  textColor: Colors.white,
+                  color: Theme.of(context).primaryColor,
+                  onPressed: () => _guardarPlanta(),
+                )
+              ],
+            ),
+          )
+        ),
       )
     );
   }

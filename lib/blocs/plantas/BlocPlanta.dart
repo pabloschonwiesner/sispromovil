@@ -2,6 +2,10 @@ import 'package:rxdart/rxdart.dart';
 import 'package:sispromovil/models/PlantaModel.dart';
 import 'package:sispromovil/repositories/plantas/Plantas_Repository.dart';
 import 'package:sispromovil/blocs/ordenesPendientes/BlocOTPendientes.dart';
+import 'package:sispromovil/blocs/ordenesPendientesPlanificadas/BlocOTPendientesPlanificadas.dart';
+import 'package:sispromovil/blocs/ordenesEnCurso/BlocOTEnCurso.dart';
+import 'package:sispromovil/blocs/ordenesFinalizadas/BlocOTFinalizadas.dart';
+import 'package:sispromovil/blocs/notificaciones/BlocNotificaciones.dart';
 
 class BlocPlanta {
   BlocPlanta() {
@@ -15,7 +19,7 @@ class BlocPlanta {
   final _servidor = BehaviorSubject<String>();
   final _seleccionada = BehaviorSubject<int>();
   final _listaPlantas = BehaviorSubject<List<PlantaModel>>();
-  // final _plantaAnterior = BehaviorSubject<String>();
+  final _filtro = BehaviorSubject<String>();
 
   List<PlantaModel> _plantas;
 
@@ -25,6 +29,7 @@ class BlocPlanta {
   Function(String) get changeCodigo => _codigo.sink.add;
   Function(String) get changeServidor => _servidor.sink.add;
   Function(int) get changeSeleccionada => _seleccionada.sink.add;
+  Function(String) get changeFiltro => _filtro.sink.add;
   
   //obtener datos
   Observable<int> get id => _id.stream;
@@ -33,11 +38,11 @@ class BlocPlanta {
   Observable<String> get servidor => _servidor.stream;
   Observable<int> get seleccionada => _seleccionada.stream;
   Observable<List<PlantaModel>> get listaPlantas => _listaPlantas.stream;
-  // Observable<String> get plantaAnterior => _plantaAnterior.stream;
+  Observable<String> get filtro => _filtro.stream;
 
 
   void initialData() async {
-    llenarListaPlantas();
+    await llenarListaPlantas();
   }
 
   void llenarListaPlantas() async {
@@ -52,33 +57,35 @@ class BlocPlanta {
       }
     }
     _listaPlantas.sink.add(_plantas);
-    servidor.listen((data) {
-      blocOTPendientes.changeServidor(data);
-    }, onDone: () => print('hola'));
   }
 
-  // void changePlantaAnterior(String plantaAnt) {
-  //   _plantaAnterior.sink.add(plantaAnt);
-  // }
-
-  void seleccionarPlanta(int id) {
-    _repository.selectPlanta(id);
-    llenarListaPlantas();
+  void seleccionarPlanta(int id) async {
+    await _repository.selectPlanta(id);
+    await llenarListaPlantas();
+    blocPendientes.getOtPendientes();
+    blocPendientes.changeFiltro('');
+    blocPendientesPlanificadas.changeFiltro('');
+    blocPendientesPlanificadas.getOtPendientesPlanificadas();
+    blocEnCurso.changeFiltro('');
+    blocEnCurso.getOtEnCurso();
+    blocFinalizadas.changeFiltro('');
+    blocFinalizadas.getOtFinalizadas();
+    blocNotificaciones.getNotificaciones();
   }
 
   void agregarPlanta(PlantaModel planta) async {
-    _repository.addPlanta(planta);
-    llenarListaPlantas();
+    await _repository.addPlanta(planta);
+    await llenarListaPlantas();
   }
 
-  void actualizarPlanta(PlantaModel planta) {
-    _repository.updatePlanta(planta);
-    llenarListaPlantas();
+  void actualizarPlanta(PlantaModel planta) async {
+    await _repository.updatePlanta(planta);
+    await llenarListaPlantas();
   }
   
-  void deletePlanta(PlantaModel planta) {
-    _repository.deletePlanta(planta);
-    llenarListaPlantas();
+  void deletePlanta(PlantaModel planta) async {
+    await _repository.deletePlanta(planta);
+    await llenarListaPlantas();
   }
 
   void dispose() async {
@@ -94,8 +101,8 @@ class BlocPlanta {
     _seleccionada.close();
     await _listaPlantas.drain();
     _listaPlantas.close();
-    // await _plantaAnterior.drain();
-    // _plantaAnterior.close();
+    await _filtro.drain();
+    _filtro.close();
   }
 
   

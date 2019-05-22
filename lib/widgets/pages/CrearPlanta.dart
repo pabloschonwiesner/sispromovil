@@ -39,72 +39,75 @@ class _CrearPlanta extends State<CrearPlanta> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: true,
       appBar: AppBar(
         title: Text('Nueva planta') ,
       ),
-      body: Form(
-        key: _keyForm,
-        child: Padding(
-          padding: EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              TextFormField(  
-                controller: _plantaController,
-                autocorrect: false,
-                decoration: InputDecoration(
-                  hintText: 'Nombre de la planta',
-                  labelText: 'Planta'
+      body: SingleChildScrollView(
+              child: Form(
+          key: _keyForm,
+          child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                TextFormField(  
+                  controller: _plantaController,
+                  autocorrect: false,
+                  decoration: InputDecoration(
+                    hintText: 'Nombre de la planta',
+                    labelText: 'Planta'
+                  ),
+                  keyboardType: TextInputType.text,
+                  
+                  onSaved: (String value) {
+                    setState(() {
+                      _plantaController.text = value;
+                    });
+                  },
                 ),
-                keyboardType: TextInputType.text,
-                
-                onSaved: (String value) {
-                  setState(() {
-                    _plantaController.text = value;
-                  });
-                },
-              ),
-              TextFormField(  
-                controller: _codigoController,
-                autocorrect: false,
-                decoration: InputDecoration(
-                  hintText: 'Codigo de cliente o promocion',
-                  labelText: 'Codigo'
+                TextFormField(  
+                  controller: _codigoController,
+                  autocorrect: false,
+                  decoration: InputDecoration(
+                    hintText: 'Codigo de cliente o promocion',
+                    labelText: 'Codigo'
+                  ),
+                  keyboardType: TextInputType.text,
+                  
+                  onSaved: (String value) {
+                    setState(() {
+                      _codigoController.text = value;
+                    });
+                  },
                 ),
-                keyboardType: TextInputType.text,
-                
-                onSaved: (String value) {
-                  setState(() {
-                    _codigoController.text = value;
-                  });
-                },
-              ),
-              TextFormField(  
-                controller: _servidorController,
-                autocorrect: false,
-                decoration: InputDecoration(
-                  hintText: 'Ruta Servidor Web',
-                  labelText: 'Servidor Web'
+                TextFormField(  
+                  controller: _servidorController,
+                  autocorrect: false,
+                  decoration: InputDecoration(
+                    hintText: 'Ruta Servidor Web',
+                    labelText: 'Servidor Web'
+                  ),
+                  keyboardType: TextInputType.text,
+                  
+                  onSaved: (String value) {
+                    setState(() {
+                      _servidorController.text = value;
+                    });
+                  },
                 ),
-                keyboardType: TextInputType.text,
-                
-                onSaved: (String value) {
-                  setState(() {
-                    _servidorController.text = value;
-                  });
-                },
-              ),
-              SizedBox(height: 20,),
-              RaisedButton(
-                child: Text('Guardar'),
-                elevation: 10,
-                textColor: Colors.white,
-                color: Theme.of(context).primaryColor,
-                onPressed: () => _guardarPlanta(),
-              )
-            ],
-          ),
-        )
+                SizedBox(height: 20,),
+                RaisedButton(
+                  child: Text('Guardar'),
+                  elevation: 10,
+                  textColor: Colors.white,
+                  color: Theme.of(context).primaryColor,
+                  onPressed: () => _guardarPlanta(),
+                )
+              ],
+            ),
+          )
+        ),
       )
     );
   }

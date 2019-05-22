@@ -23,13 +23,14 @@ dependencies:
   intl: ^0.15.7
   sqflite: any
   path_provider: any
-  flutter_bloc: ^0.5.0
   equatable: ^0.1.0
   rxdart: ^0.21.0
+  
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
 
 
 # For information on the generic Dart part of this file, see the
@@ -44,8 +45,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #  - images/a_dot_burr.jpeg
+  assets:
+    - assets/imagenes/
+  # - assets/imagenes/logoSisproMobile.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

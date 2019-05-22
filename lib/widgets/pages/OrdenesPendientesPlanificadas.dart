@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:sispromovil/models/PendientesPlanificadasModel.dart';
 import 'package:intl/intl.dart';
-import 'package:sispromovil/blocs/plantas/BlocPlanta.dart';
-import 'package:sispromovil/blocs/busqueda/BlocBusqueda.dart';
+import 'package:sispromovil/blocs/ordenesPendientesPlanificadas/BlocOTPendientesPlanificadas.dart';
 import 'package:sispromovil/widgets/pages/DetalleOT.dart';
 
 class OrdenesPendientesPlanificadas extends StatefulWidget {
@@ -14,75 +11,16 @@ class OrdenesPendientesPlanificadas extends StatefulWidget {
 }
 
 class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas> {
-  PendientesPlanificadasModel itemsPendientesPlanificadas;
-  int totalItems = 0;
-  int parcialItems = 0;
-  String baseUrl;
-  String plantaActual;
-  String plantaAnterior;
-  String filtroBusq = '';
 
   @override
   void initState() {
+    blocPendientesPlanificadas.initialData();
     super.initState();
-    blocPlanta.servidor.listen((servidor) {
-      baseUrl = servidor + '/pendientesPlanificadas';
-      plantaActual = servidor;
-      plantaAnterior = servidor;
-      _obtenerPlanificadas();      
-    });
-
-    blocBusquedas.filtro.listen((filtro) {
-      filtroBusq = filtro;
-      _obtenerPlanificadas();      
-    });
   }
 
   @override
   void dispose() {
     super.dispose();
-  }
-
-  void _obtenerPlanificadas() async {
-    if(plantaActual != plantaAnterior) {
-      itemsPendientesPlanificadas = null;
-      totalItems = 0;
-      parcialItems = 0;
-    }
-
-    var response = await http.get('$baseUrl');
-    
-    if(response.statusCode == 200) {
-      if(mounted) {
-        setState(() {
-          var decodeJson = jsonDecode(response.body);
-          if(itemsPendientesPlanificadas == null) {
-            itemsPendientesPlanificadas = PendientesPlanificadasModel.fromJson(decodeJson);
-            totalItems = itemsPendientesPlanificadas.totalRegistros;
-          } else {
-            itemsPendientesPlanificadas.data.addAll(PendientesPlanificadasModel.fromJson(decodeJson).data);
-          }
-          parcialItems =itemsPendientesPlanificadas.data.length;
-          plantaAnterior = plantaActual;
-        });
-      }
-            
-
-      if(filtroBusq.isNotEmpty && itemsPendientesPlanificadas.data.isNotEmpty) {
-        itemsPendientesPlanificadas.data.map((maquina) {
-          if(maquina.ots.isNotEmpty) {
-            maquina.ots.retainWhere((ot) {
-              return ot.id == filtroBusq || ot.cliente.toLowerCase().contains(filtroBusq) || ot.trabajo.toLowerCase().contains(filtroBusq);
-            });
-          }
-        }).toList();
-        itemsPendientesPlanificadas.data.retainWhere((maquina) {
-          return maquina.ots.isNotEmpty;
-        });
-      } 
-    } else {
-      print('error');
-    }
   }
 
   String _hsSexagesimales(double hs) {
@@ -213,27 +151,36 @@ class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas
   }
 
 
-  Widget _listaRecursos() {
-    return
-    parcialItems > 0
-    ? ListView(
+  Widget _listaRecursos(PendientesPlanificadasModel itemsPendientesPlanificadas) {
+    return ListView(
       children: itemsPendientesPlanificadas.data.map((recurso) => Padding(
           padding: EdgeInsets.symmetric(horizontal: 5),
           child: _listaTrabajos(recurso)
         )).toList()
-      )
-    : Container(width: 0, height: 0);
-      
+      );      
   }
 
- @override
+  @override
  Widget build(BuildContext context) {
-  return Column(
-    children: <Widget>[
-      Flexible(
-        child: _listaRecursos()       
-      )
-    ],
+  return StreamBuilder(
+    stream: blocPendientesPlanificadas.pendientesFiltradas,
+    builder: (context, snapshot) {
+      if(!snapshot.hasData) {
+        return Container(
+          child: Center(
+            child: CircularProgressIndicator()
+          )
+        );
+      } else {
+        return Column(
+          children: <Widget>[
+            Flexible(
+              child: _listaRecursos(snapshot.data),
+            )
+          ],
+        );
+      }
+    }
   );
  }
 }

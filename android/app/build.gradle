@@ -39,7 +39,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.upsoftware.sispromb"
+        applicationId "com.upsoftware.sispromobile"
         minSdkVersion 16
         targetSdkVersion 27
         versionCode 20000

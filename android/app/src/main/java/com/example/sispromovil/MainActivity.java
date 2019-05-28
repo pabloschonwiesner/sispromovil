@@ -1,4 +1,4 @@
-package com.upsoftware.sispromb;
+package com.upsoftware.sispromobile;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

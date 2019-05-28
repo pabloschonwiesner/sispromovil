@@ -2,10 +2,13 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sispromovil/repositories/registro/Registro_Repository.dart';
+import 'package:sispromovil/models/RegistroModel.dart';
 
 class InitDB {
   Directory documentDirectory; 
   String path;
+  final _registroRepository = RegistroRepository();
 
   InitDB();
   
@@ -24,13 +27,16 @@ class InitDB {
   }
 
   void _onCreate(Database db, int version) async {
+    
+    RegistroModel _registro = await _registroRepository.fetchRegistro('DEMO15');
+    String _servidor = _registro.data[0].servidor;
     await db.execute("CREATE TABLE Parametros (id INTEGER PRIMARY KEY, planta TEXT, codigo TEXT, servidor TEXT, seleccionada int)");
     await db.execute("CREATE TABLE Busquedas (id INTEGER PRIMARY KEY, busqueda TEXT)");
 
     var q = await db.rawQuery('SELECT * FROM Parametros WHERE id =  1 and codigo = "DEMO15"');
     if(q.isEmpty) {
       await db.rawInsert('INSERT INTO Parametros (id, planta, codigo, servidor, seleccionada) VALUES(?,?,?,?,?)',
-      [1, 'Planta Demo', 'DEMO15', 'http://192.168.163.2:4002/', 1]);
+      [1, 'Planta Demo', 'DEMO15', _servidor, 1]);
     }
     print('Tablas Creadas');
   }

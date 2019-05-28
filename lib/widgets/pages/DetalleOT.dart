@@ -22,7 +22,10 @@ class DetalleOT extends StatefulWidget {
 
 class _DetalleOT extends State<DetalleOT> {
   String baseUrl;
+  int _cantChecks = 0;
+  int _cantGeop = 0;
   ChecksModel _detalleChecks;
+  
   
   @override
   void initState() {
@@ -37,16 +40,121 @@ class _DetalleOT extends State<DetalleOT> {
     super.dispose();
   }
 
-  void _listaDetalleOT() async {
+  Future<ChecksModel> _listaDetalleOT() async { 
     var response = await http.get('$baseUrl?ot=${widget.id}&subot=${widget.subID}');
-    if(response.statusCode == 200) {
+    if(response.statusCode == 200 && mounted) {
+      _detalleChecks = ChecksModel.fromJson(json.decode(response.body));
       setState(() {
-        _detalleChecks = ChecksModel.fromJson(json.decode(response.body));
+        _cantChecks = _detalleChecks.data[0].checkList.length;
+        _cantGeop = _detalleChecks.data[0].geop.length;
       });
     } else {
-      _detalleChecks = null;
+      _detalleChecks.data[0].checkList = [];
+      _detalleChecks.data[0].geop = [];
     }
-      
+    return _detalleChecks;
+  }
+
+  Widget _buildDetalleOT() {
+    return FutureBuilder(
+      future: _listaDetalleOT(),
+      builder: (context, snapshot) {
+        return Padding(
+          padding: EdgeInsets.all(10),
+          child: Column(            
+            children: <Widget>[
+              Text('OT: ${widget.id}  SubOT: ${widget.subID}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 10, 0, 3),
+                child: Text('${widget.cliente}', textAlign: TextAlign.start, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold))
+              ),
+              Text('${widget.cantPedida} un -${widget.producto}', textAlign: TextAlign.start, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontStyle: FontStyle.italic)),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 3),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text('Fecha OT: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                    Text(
+                      '${DateFormat('dd/MM/yyyy').format(DateTime.parse(widget.fechaOT))}',
+                      style: TextStyle(fontSize: 12)
+                    ),
+                    Text('   Fecha Ent: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                    Text(
+                      '${DateFormat('dd/MM/yyyy').format(DateTime.parse(widget.fechaEntrega))}',
+                      style: TextStyle(fontSize: 12),)
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 5),
+                child: Divider()
+              ),
+              Container(
+                height: 40,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _cantChecks,
+                  itemBuilder: (context, index) {
+                    if(snapshot.data == null) {
+                      return Center(child: CircularProgressIndicator(),);
+                    } else {
+                      ChecksModel datos = snapshot.data;
+                      return Padding(
+                        padding: EdgeInsets.only(left: 2),
+                        child: FilterChip(
+                          backgroundColor: datos.data[0].checkList[index].valor == "0" ? Colors.grey[300] : Colors.lightGreenAccent,
+                          labelStyle: TextStyle(fontSize: 12, color: Colors.black,),
+                          label: Padding(
+                            padding: EdgeInsets.all(4),
+                            child: Text(datos.data[0].checkList[index].clave)),
+                          onSelected: (b) {},
+                        ));
+                    }
+                  },
+                )
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 5),
+                child: Divider()
+              ),
+              Flexible(
+                flex: 1,
+                child: ListView.builder(
+                  itemCount: _cantGeop,
+                  itemBuilder: (context, index) {
+                    if(snapshot.data == null) {
+                      return Center(child: CircularProgressIndicator());
+                    } else {
+                      ChecksModel datos = snapshot.data;
+                      return  Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          RichText(
+                            textAlign: TextAlign.start,
+                            overflow: TextOverflow.ellipsis,
+                            text: TextSpan(
+                              text: '${datos.data[0].geop[index].clave}:   ',
+                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),                            
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: '${datos.data[0].geop[index].valor}',
+                                  style: TextStyle(fontSize: 13, color: Colors.black, fontWeight: FontWeight.normal)
+                                )
+                              ]
+                            )
+                          )
+                        ],
+                      );
+                    }                  
+                  },
+                ),
+              )
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -74,100 +182,7 @@ class _DetalleOT extends State<DetalleOT> {
           },
         ),  
       ),
-      body: Padding(
-        padding: EdgeInsets.all(10),
-        child: Column(            
-          children: <Widget>[
-            Text('OT: ${widget.id}  SubOT: ${widget.subID}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 10, 0, 3),
-              child: Text('${widget.cliente}', textAlign: TextAlign.start, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold))
-            ),
-            Text('${widget.cantPedida} un -${widget.producto}', textAlign: TextAlign.start, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontStyle: FontStyle.italic)),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 3),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text('Fecha OT: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                  Text(
-                    '${DateFormat('dd/MM/yyyy').format(DateTime.parse(widget.fechaOT))}',
-                    style: TextStyle(fontSize: 12)
-                  ),
-                  Text('   Fecha Ent: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                  Text(
-                    '${DateFormat('dd/MM/yyyy').format(DateTime.parse(widget.fechaEntrega))}',
-                    style: TextStyle(fontSize: 12),)
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 5),
-              child: Divider()
-            ),
-            Container(
-              height: 40,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: _detalleChecks != null ? _detalleChecks.data[0].checkList.length : 0,
-                itemBuilder: (context, index) {
-                  if(_detalleChecks == null) {
-                    return Center(child: CircularProgressIndicator(),);
-                  } else {
-                    return Padding(
-                      padding: EdgeInsets.only(left: 2),
-                      child: FilterChip(
-                        backgroundColor: _detalleChecks.data[0].checkList[index].valor == "0" ? Colors.grey[300] : Colors.lightGreenAccent,
-                        labelStyle: TextStyle(fontSize: 12, color: Colors.black,),
-                        label: Padding(
-                          padding: EdgeInsets.all(4),
-                          child: Text(_detalleChecks.data[0].checkList[index].clave)),
-                        onSelected: (b) {},
-                      ));
-                  }
-                },
-              )
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 5),
-              child: Divider()
-            ),
-            Flexible(
-              flex: 1,
-              child: ListView.builder(
-                itemCount: _detalleChecks != null ? _detalleChecks.data[0].geop.length : 0,
-                itemBuilder: (context, index) {
-                  if(_detalleChecks == null) {
-                    return Center(child: CircularProgressIndicator());
-                  } else {
-                    return  Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        RichText(
-                          textAlign: TextAlign.start,
-                          overflow: TextOverflow.ellipsis,
-                          text: TextSpan(
-                            text: '${_detalleChecks.data[0].geop[index].clave}:   ',
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),                            
-                            children: <TextSpan>[
-                              TextSpan(
-                                text: '${_detalleChecks.data[0].geop[index].valor}',
-                                style: TextStyle(fontSize: 13, color: Colors.black, fontWeight: FontWeight.normal)
-                              )
-                            ]
-                          )
-                        )
-                        // Text('${_detalleChecks.data[0].geop[index].clave}:   ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),),
-                        // Text('${_detalleChecks.data[0].geop[index].valor}', overflow: TextOverflow.ellipsis ,style: TextStyle(fontSize: 14))
-                      ],
-                    );
-                  }                  
-                },
-              ),
-            )
-          ],
-        ),
-      )
+      body: _buildDetalleOT()
     );
   }
 }

@@ -46,6 +46,16 @@ class BlocNotificaciones {
     });  
   }
 
+  void desmarcarTodas() async {
+    String url;
+    await _repoPlantas.getPlantaSelect().then((planta) {
+      url = '${planta.servidor}/desmarcarNotificaciones';
+      _repoNotificaciones.desmarcarTodas(url).then((ots) {
+        getNotificaciones();
+      });
+    });
+  }
+
   void dispose() {
     _notificaciones.close();
     _cantidadNotificaciones.close();

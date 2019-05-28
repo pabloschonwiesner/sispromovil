@@ -21,4 +21,9 @@ class NotificacionesApiProvider {
     print('StatusCode: ${response.statusCode}');
     return response.body;
   }
+
+  Future desmarcarTodas(String url) async {
+    final response = await http.get(url);
+    return response.body;
+  }
 }

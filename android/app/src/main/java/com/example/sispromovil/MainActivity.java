@@ -1,4 +1,4 @@
-package com.example.sispromovil;
+package com.upsoftware.sispromb;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

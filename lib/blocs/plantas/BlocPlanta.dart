@@ -56,6 +56,9 @@ class BlocPlanta {
         changeSeleccionada(_plantas[i].seleccionada);
       }
     }
+    if(_plantas.length>1) {
+      _plantas.removeAt(0);
+    }
     _listaPlantas.sink.add(_plantas);
   }
 

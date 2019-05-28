@@ -106,6 +106,13 @@ class _Notificaciones extends State<Notificaciones> {
           },
         ),  
         actions: <Widget>[
+          GestureDetector(
+            child: Icon(Icons.access_time, color: Theme.of(context).primaryColor,),
+            onDoubleTap: () {
+              print('desde notificaciones on long press');
+              blocNotificaciones.desmarcarTodas();
+            },
+          ),
           Padding(
             padding: EdgeInsets.all(15),
             child: Container(

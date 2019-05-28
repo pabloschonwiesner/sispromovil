@@ -88,7 +88,7 @@ class _HomeState extends State<Home>  {
               
             },
           ),        
-          actions: <Widget>[
+          actions: <Widget>[            
             StreamBuilder(
               stream: blocPlanta.filtro,
               builder: (context, snapshot) {
@@ -128,15 +128,15 @@ class _HomeState extends State<Home>  {
                   child: StreamBuilder(
                     stream: blocNotificaciones.cantidadNotificaciones,
                     builder: (context, snapshot) {
-                      if(snapshot.connectionState == ConnectionState.done) {
-                        print('Done');
-                      }
-                      if(snapshot.connectionState == ConnectionState.waiting) {
-                        print('Waiting');
-                      }
-                      if(snapshot.connectionState == ConnectionState.active) {
-                        print('Active');
-                      }
+                      // if(snapshot.connectionState == ConnectionState.done) {
+                      //   print('Done');
+                      // }
+                      // if(snapshot.connectionState == ConnectionState.waiting) {
+                      //   print('Waiting');
+                      // }
+                      // if(snapshot.connectionState == ConnectionState.active) {
+                      //   print('Active');
+                      // }
 
                       if(snapshot.hasData && snapshot.data > 0) {
                           return Container(

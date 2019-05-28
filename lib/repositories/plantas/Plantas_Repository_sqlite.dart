@@ -25,7 +25,9 @@ class PlantaProvider {
     var idSiguiente = table.first['id'];
     await db.rawInsert("INSERT INTO Parametros (id, planta, codigo, servidor,  seleccionada) VALUES (?,?,?,?,?)",
     [idSiguiente, planta.planta, planta.codigo, planta.servidor, 0]);
-    
+    var count = await db.rawQuery("SELECT * FROM Parametros WHERE id > 1 ORDER BY id LIMIT 1 ");
+    print('Count ${count.length} // ${count.first['id']}');
+    await selectPlanta(count.first['id']);
   }
 
   Future<List<PlantaModel>> getListPlantas() async {
@@ -45,7 +47,10 @@ class PlantaProvider {
     final db = await database;
     var res = await db.query('Parametros', where: 'seleccionada = ?', whereArgs: [1]);
     if(res.length == 0) {
-      db.rawUpdate('UPDATE Parametros SET seleccionada = 1 where id = 1').then((_) => getPlantaSelect());
+      await selectPlanta(1);
+      await getPlantaSelect();
+      res = await db.query('Parametros', where: 'seleccionada = ?', whereArgs: [1]);
+      return PlantaModel.fromMap(res.first);
     }
     return PlantaModel.fromMap(res.first);
   }
@@ -61,14 +66,16 @@ class PlantaProvider {
     var count = await db.query('Parametros');
     var res;
     if(count.length > 1) {
-      res = await db.rawQuery("SELECT MIN(id) as id from Parametros where id > 1");
+      res = await db.rawQuery("SELECT * from Parametros where id > 1 LIMIT 1");
     } else {
-      res = await db.rawQuery("SELECT MIN(id) as id from Parametros");
+      res = await db.rawQuery("SELECT * from Parametros LIMIT 1");
     }
     var id = res.first['id'];
-    db.rawUpdate('UPDATE Parametros SET seleccionada = 0').then(
-      (r) => db.rawUpdate('UPDATE Parametros SET seleccionada = 1 WHERE id = $id')
-    );
+    await deseleccionarTodas();
+    await selectPlanta(id);
+    // db.rawUpdate('UPDATE Parametros SET seleccionada = 0').then(
+    //   (r) => db.rawUpdate('UPDATE Parametros SET seleccionada = 1 WHERE id = $id')
+    // );
 
   }
 

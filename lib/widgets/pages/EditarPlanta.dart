@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sispromovil/models/PlantaModel.dart';
+import 'package:sispromovil/models/RegistroModel.dart';
+import 'package:sispromovil/repositories/registro/Registro_Repository.dart';
 import 'package:sispromovil/widgets/pages/Home.dart';
 import 'package:sispromovil/blocs/plantas/BlocPlanta.dart';
 import 'package:sispromovil/blocs/plantas/BlocPlantaProvider.dart';
@@ -17,6 +19,7 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
   TextEditingController _codigoController = TextEditingController();
   TextEditingController _servidorController = TextEditingController();
   GlobalKey<FormState> _keyForm = GlobalKey<FormState>();
+  GlobalKey<ScaffoldState> _keyScaffold = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -28,25 +31,36 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
     });
   }
 
-  void _guardarPlanta() {
+  void _guardarPlanta() async {
     _keyForm.currentState.save();
-    final Map<String, dynamic> paramsMap = {
-      "id": widget.planta.id,
-      "planta": _plantaController.text,
-      "codigo": _codigoController.text,
-      "servidor": _servidorController.text,
-      "seleccionada": widget.planta.seleccionada
-    };
-    PlantaModel planta = PlantaModel.fromMap(paramsMap);
-    blocPlanta.actualizarPlanta(planta);
-    Navigator.push(context, MaterialPageRoute(
-      builder: (context) => Home()
-    ));
+    RegistroRepository _repositoryRegistro = RegistroRepository();
+    RegistroModel _registro = await _repositoryRegistro.fetchRegistro(_codigoController.text);
+    _servidorController.text = _registro.data[0].servidor;
+    
+    if(_registro.data.isNotEmpty) {
+      final Map<String, dynamic> paramsMap = {
+        "id": widget.planta.id,
+        "planta": _plantaController.text,
+        "codigo": _codigoController.text,
+        "servidor": _servidorController.text,
+        "seleccionada": widget.planta.seleccionada
+      };
+      PlantaModel planta = PlantaModel.fromMap(paramsMap);
+      blocPlanta.actualizarPlanta(planta);
+      Navigator.push(context, MaterialPageRoute(
+        builder: (context) => Home()
+      ));
+    } else {
+      _keyScaffold.currentState.showSnackBar(SnackBar(content: Text('El codigo de planta no es válido')));
+    }
+    
+    
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _keyScaffold,
       resizeToAvoidBottomPadding: true,
       appBar: AppBar(
         title: Text(widget.planta.planta),
@@ -82,7 +96,7 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
         ],
       ),
       body: SingleChildScrollView(
-              child: Form(
+        child: Form(
           key: _keyForm,
           child: Padding(
             padding: EdgeInsets.all(10),
@@ -96,13 +110,17 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
                     hintText: 'Nombre de la planta',
                     labelText: 'Planta'
                   ),
-                  keyboardType: TextInputType.text,
-                  
+                  keyboardType: TextInputType.text,                  
                   onSaved: (String value) {
                     setState(() {
                       _plantaController.text = value;
                     });
                   },
+                  validator: (String value) {
+                      if(value.isEmpty) {
+                        return 'Ingrese la planta';
+                      }
+                    }
                 ),
                 TextFormField(  
                   controller: _codigoController,
@@ -111,51 +129,49 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
                     hintText: 'Codigo de cliente o promocion',
                     labelText: 'Codigo'
                   ),
-                  keyboardType: TextInputType.text,
-                  
+                  keyboardType: TextInputType.text,                  
                   onSaved: (String value) {
                     setState(() {
                       _codigoController.text = value;
                     });
                   },
+                  validator: (String value) {
+                      if(value.isEmpty) {
+                        return 'Ingrese el codigo';
+                      }
+                    }
                 ),
-                TextFormField(  
-                  controller: _servidorController,
-                  autocorrect: false,
-                  decoration: InputDecoration(
-                    hintText: 'Ruta Servidor Web',
-                    labelText: 'Servidor Web'
-                  ),
-                  keyboardType: TextInputType.text,
-                  
-                  onSaved: (String value) {
-                    setState(() {
-                      _servidorController.text = value;
-                    });
-                  },
-                ),
-                // TextFormField(  
-                //   controller: _puertoController,
-                //   autocorrect: false,
-                //   decoration: InputDecoration(
-                //     hintText: 'Puerto Servidor Web',
-                //     labelText: 'Puerto Servidor Web'
-                //   ),
-                //   keyboardType: TextInputType.number,
-                  
-                //   onSaved: (String value) {
-                //     setState(() {
-                //       _puertoController.text = value;
-                //     });
-                //   },
-                // ),
+                widget.planta.id != 1 ?
+                  TextFormField(                 
+                    enabled: false,       
+                    style: TextStyle(color: Colors.grey),               
+                    controller: _servidorController,
+                    autocorrect: false,
+                    decoration: InputDecoration(
+                      hintText: 'Ruta Servidor Web',
+                      labelText: 'Servidor Web',                                            
+                    ),
+                    keyboardType: TextInputType.text,                    
+                    onSaved: (String value) {
+                      setState(() {
+                        _servidorController.text = value;
+                      });
+                    },
+                  ) : Container(),
+                
                 SizedBox(height: 20,),
                 RaisedButton(
                   child: Text('Guardar'),
                   elevation: 10,
                   textColor: Colors.white,
                   color: Theme.of(context).primaryColor,
-                  onPressed: () => _guardarPlanta(),
+                  onPressed: () {
+                    if(_keyForm.currentState.validate()) {
+                      return _guardarPlanta();
+                    } else {
+                      return null;
+                    }
+                  }
                 )
               ],
             ),

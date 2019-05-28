@@ -33,6 +33,7 @@ build/
 **/android/.gradle
 **/android/captures/
 **/android/gradlew
+**/android/key.properties
 **/android/gradlew.bat
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java

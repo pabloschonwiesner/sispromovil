@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sispromovil/widgets/pages/Home.dart';
 import 'package:sispromovil/widgets/pages/CrearPlanta.dart';
 import 'package:sispromovil/widgets/pages/OrdenesPendientes.dart';
 import 'package:sispromovil/widgets/pages/OrdenesPendientesPlanificadas.dart';

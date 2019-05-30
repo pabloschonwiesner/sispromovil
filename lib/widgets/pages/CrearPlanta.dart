@@ -15,7 +15,6 @@ class CrearPlanta extends StatefulWidget {
 class _CrearPlanta extends State<CrearPlanta> with TickerProviderStateMixin {
   TextEditingController _plantaController = TextEditingController();
   TextEditingController _codigoController = TextEditingController();
-  TextEditingController _servidorController = TextEditingController();
   GlobalKey<FormState> _keyForm = GlobalKey<FormState>();
   GlobalKey<ScaffoldState> _keyScaffold = GlobalKey<ScaffoldState>();
   

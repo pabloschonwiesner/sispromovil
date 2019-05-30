@@ -26,6 +26,7 @@ class _SplashState extends State<Splash> {
           Container(
             padding: EdgeInsets.only(bottom: 20),
             child: Image.asset(
+              
               'assets/imagenes/logoSisproMobile.png',
               width: MediaQuery.of(context).size.width * 0.4,
               height: MediaQuery.of(context).size.width * 0.4,

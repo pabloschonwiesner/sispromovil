@@ -35,7 +35,7 @@ class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas
   Widget _itemOT(Ots ot) {
     double anchoPantalla = MediaQuery.of(context).size.width;
     return Container(
-      width: anchoPantalla * 0.8,
+      width: anchoPantalla * 0.8 * MediaQuery.of(context).textScaleFactor,
       child: ot.id != '' 
         ? GestureDetector(
           onTap: () { Navigator.push(
@@ -48,12 +48,13 @@ class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas
             elevation: 10,
             margin: EdgeInsets.fromLTRB(2, 4, 2, 4),
             child: Padding(
+              // padding: EdgeInsets.fromLTRB(6,3,6,3),
               padding: EdgeInsets.fromLTRB(6,3,6,3),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text('OT: ${ot.id}  SubOT: ${ot.subId}', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-                    Text('${ot.cliente}', textAlign: TextAlign.start, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                    Text('OT: ${ot.id}  SubOT: ${ot.subId}', maxLines: 1, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                    Text('${ot.cliente}', maxLines: 1, textAlign: TextAlign.start, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                     Text(
                       '${ot.cantidadProducto} un - ${ot.trabajo}', 
                       textAlign: TextAlign.start, 
@@ -62,7 +63,7 @@ class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas
                       maxLines: 2),
                     Row(
                       children: <Widget>[
-                        Text('Fecha OT: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                        Text('Fecha OT: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                         Text(
                           '${DateFormat('dd/MM/yyyy').format(DateTime.parse(ot.fechaOT))}',
                           style: TextStyle(fontSize: 12)
@@ -120,9 +121,11 @@ class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas
   }
 
   Widget _listaTrabajos(Data recurso) {
+    double alto = MediaQuery.of(context).textScaleFactor > 1 ? 160 * MediaQuery.of(context).textScaleFactor : 160 ;
+    
     return Container(
       margin: EdgeInsets.symmetric(vertical: 4),
-      height: 160,
+      height: alto,
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(width: 1, color: Colors.grey[400]))
       ),

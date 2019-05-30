@@ -11,7 +11,7 @@ import 'package:sispromovil/blocs/plantas/BlocPlantaProvider.dart';
 import 'package:sispromovil/blocs/plantas/BlocPlanta.dart';
 import 'package:sispromovil/widgets/pages/Notificaciones.dart';
 import 'package:sispromovil/blocs/notificaciones/BlocNotificaciones.dart';
-
+import 'package:sispromovil/utils/Utils.dart';
 
  class Home extends StatefulWidget {
   @override
@@ -64,6 +64,7 @@ class _HomeState extends State<Home>  {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.instance = ScreenUtil(width: 360, height: 592, allowFontScaling: true)..init(context);
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(

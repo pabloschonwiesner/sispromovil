@@ -25,6 +25,7 @@ class _OrdenesFinalizadas extends State<OrdenesFinalizadas> {
   }
 
   Widget _listaOTSFinalizadas(FinalizadasModel itemsFinalizados) {
+    double alto = MediaQuery.of(context).textScaleFactor * 100;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget> [
@@ -33,15 +34,6 @@ class _OrdenesFinalizadas extends State<OrdenesFinalizadas> {
           itemCount: itemsFinalizados.data.length,
           itemBuilder: (BuildContext context, int index) {
             var ot = itemsFinalizados.data[index];
-            // if(index == parcialItems -1) {
-            //   desdeItem = parcialItems;
-            //   _obtenerFinalizadas();
-            //   if(index < totalItems) {
-            //     return Center(
-            //       child: CircularProgressIndicator(),
-            //     );
-            //   }
-            // } else {
               return GestureDetector(
                 onTap: () { Navigator.push(
                   context,
@@ -53,7 +45,7 @@ class _OrdenesFinalizadas extends State<OrdenesFinalizadas> {
                   margin: EdgeInsets.fromLTRB(4,4,4,15),
                   elevation: 15,
                   child: Container(
-                    height: 100,
+                    height: alto,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[

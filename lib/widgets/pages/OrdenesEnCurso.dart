@@ -132,14 +132,14 @@ class _OrdenesEnCurso extends State<OrdenesEnCurso> {
                                             fontWeight: FontWeight.bold,
                                             fontSize: 12)),
                                     Text(
-                                        '${DateFormat('dd/MM/yyyy').format(DateTime.parse(recurso.fechaOT))}',
+                                        '${recurso.fechaOT.isEmpty ? '' : DateFormat('dd/MM/yyyy').format(DateTime.parse(recurso.fechaOT))}',
                                         style: TextStyle(fontSize: 12)),
                                     Text('   Fecha Ent: ',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 12)),
                                     Text(
-                                      '${DateFormat('dd/MM/yyyy').format(DateTime.parse(recurso.fechaEntrega))}',
+                                      '${recurso.fechaEntrega.isEmpty ? '' : DateFormat('dd/MM/yyyy').format(DateTime.parse(recurso.fechaEntrega))}',
                                       style: TextStyle(fontSize: 12),
                                     )
                                   ],

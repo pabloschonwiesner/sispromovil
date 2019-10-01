@@ -63,12 +63,12 @@ class _OrdenesFinalizadas extends State<OrdenesFinalizadas> {
                                     children: <Widget>[
                                       Text('Fecha OT: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                                       Text(
-                                        '${DateFormat('dd/MM/yyyy').format(DateTime.parse(ot.fechaOT))}',
+                                        '${ot.fechaOT.isEmpty ? '' : DateFormat('dd/MM/yyyy').format(DateTime.parse(ot.fechaOT))}',
                                         style: TextStyle(fontSize: 12)
                                       ),
                                       Text('   Fecha Ent: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                                       Text(
-                                        '${DateFormat('dd/MM/yyyy').format(DateTime.parse(ot.fechaEntrega))}',
+                                        '${ot.fechaEntrega.isEmpty ? '' : DateFormat('dd/MM/yyyy').format(DateTime.parse(ot.fechaEntrega))}',
                                         style: TextStyle(fontSize: 12),)
                                     ],
                                   ),

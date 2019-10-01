@@ -30,7 +30,10 @@ class _DetalleOT extends State<DetalleOT> {
   @override
   void initState() {
     blocPlanta.servidor.listen((servidor) {
-      baseUrl = servidor + '/detalle';
+      print('Servidor desde detalleOT: $servidor');
+      setState(() {
+        baseUrl = servidor + '/detalle';
+      });
       _listaDetalleOT();
     });
     super.initState();
@@ -41,18 +44,20 @@ class _DetalleOT extends State<DetalleOT> {
   }
 
   Future<ChecksModel> _listaDetalleOT() async { 
-    var response = await http.get('$baseUrl?ot=${widget.id}&subot=${widget.subID}');
-    if(response.statusCode == 200 && mounted) {
-      _detalleChecks = ChecksModel.fromJson(json.decode(response.body));
-      setState(() {
-        _cantChecks = _detalleChecks.data[0].checkList.length;
-        _cantGeop = _detalleChecks.data[0].geop.length;
-      });
-    } else {
-      _detalleChecks.data[0].checkList = [];
-      _detalleChecks.data[0].geop = [];
+    if(baseUrl != null) {
+      var response = await http.get('$baseUrl?ot=${widget.id}&subot=${widget.subID}');
+      if(response.statusCode == 200 && mounted) {
+        _detalleChecks = ChecksModel.fromJson(json.decode(response.body));
+        setState(() {
+          _cantChecks = _detalleChecks.data[0].checkList.length;
+          _cantGeop = _detalleChecks.data[0].geop.length;
+        });
+      } else {
+        _detalleChecks = ChecksModel();
+      }
+      return _detalleChecks;
     }
-    return _detalleChecks;
+    
   }
 
   Widget _buildDetalleOT() {
@@ -76,12 +81,12 @@ class _DetalleOT extends State<DetalleOT> {
                   children: <Widget>[
                     Text('Fecha OT: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                     Text(
-                      '${DateFormat('dd/MM/yyyy').format(DateTime.parse(widget.fechaOT))}',
+                      '${widget.fechaOT.isEmpty ? '' : DateFormat('dd/MM/yyyy').format(DateTime.parse(widget.fechaOT))}',
                       style: TextStyle(fontSize: 12)
                     ),
                     Text('   Fecha Ent: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                     Text(
-                      '${DateFormat('dd/MM/yyyy').format(DateTime.parse(widget.fechaEntrega))}',
+                      '${widget.fechaEntrega.isEmpty ? '' : DateFormat('dd/MM/yyyy').format(DateTime.parse(widget.fechaEntrega))}',
                       style: TextStyle(fontSize: 12),)
                   ],
                 ),

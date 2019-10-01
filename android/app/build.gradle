@@ -41,9 +41,9 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.upsoftware.sispromobile"
         minSdkVersion 16
-        targetSdkVersion 27
-        versionCode 20000
-        versionName "2.0.0"
+        targetSdkVersion 28
+        versionCode 20002
+        versionName "2.0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 

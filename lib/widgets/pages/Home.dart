@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sispromovil/providers/BusquedaProvider.dart';
 import 'package:sispromovil/widgets/pages/OrdenesPendientes.dart';
 import 'package:sispromovil/widgets/pages/OrdenesPendientesPlanificadas.dart';
 import 'package:sispromovil/widgets/pages/OrdenesEnCurso.dart';
@@ -64,6 +65,8 @@ class _HomeState extends State<Home>  {
 
   @override
   Widget build(BuildContext context) {
+    BusquedaProvider bp = Provider.of<BusquedaProvider>(context);
+
     ScreenUtil.instance = ScreenUtil(width: 360, height: 592, allowFontScaling: true)..init(context);
     return WillPopScope(
       onWillPop: _onWillPop,
@@ -89,25 +92,13 @@ class _HomeState extends State<Home>  {
               
             },
           ),        
-          actions: <Widget>[            
-            StreamBuilder(
-              stream: blocPlanta.filtro,
-              builder: (context, snapshot) {
-                if(snapshot.hasData && snapshot.data != '') {
-                  return IconButton(
-                    icon: Icon(Icons.filter_list, color: Colors.greenAccent, size: 30,),
-                    onPressed: () {
-                      showSearch(context: context, delegate: Search());
-                    },
-                  );                
-                } else {
-                  return IconButton(
-                    icon: Icon(Icons.search),
-                    onPressed: () {
-                      showSearch(context: context, delegate: Search());
-                    },
-                  );
-                }
+          actions: <Widget>[   
+            IconButton(
+              icon: bp.getBusqueda.busqueda != '' && bp.getBusqueda.busqueda != null
+                ? Icon(Icons.filter_list, color: Colors.greenAccent, size: 30,)
+                : Icon(Icons.search),
+              onPressed: () {
+                showSearch(context: context, delegate: Search(context));
               },
             ),
             Stack(

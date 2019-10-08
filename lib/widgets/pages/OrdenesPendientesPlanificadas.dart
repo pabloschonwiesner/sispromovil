@@ -77,7 +77,7 @@ class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas
                     Row(
                       children: <Widget>[
                         Text('Inicio: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                        Text('${DateFormat('dd/MM/yyyy hh:mm').format(DateTime.parse(ot.fechaInicio))}', style: TextStyle(fontSize: 12)),
+                        Text('${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(ot.fechaInicio))}', style: TextStyle(fontSize: 12)),
                         Text('    Hs Prog: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                         Text('${_hsSexagesimales(ot.horasTotales)}', style: TextStyle(fontSize: 12)),
                       ],
@@ -108,9 +108,9 @@ class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text('Inicio: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10), ),
-                      Text('${DateFormat('dd/MM/yyyy hh:mm').format(DateTime.parse(ot.fechaInicio))}', style: TextStyle(fontSize: 10)),
+                      Text('${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(ot.fechaInicio))}', style: TextStyle(fontSize: 10)),
                       Text('   Fin: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
-                      Text('${DateFormat('dd/MM/yyyy hh:mm').format(DateTime.parse(ot.fechaFin))}', style: TextStyle(fontSize: 10)),
+                      Text('${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(ot.fechaFin))}', style: TextStyle(fontSize: 10)),
                     ],
                   )
                 ],

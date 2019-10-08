@@ -75,13 +75,13 @@ class _OrdenesFinalizadas extends State<OrdenesFinalizadas> {
                                   Row(
                                     children: <Widget>[
                                       Text('Inicio OT: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                                      Text('${DateFormat('dd/MM/yyyy hh:mm').format(DateTime.parse(ot.inicioOt))}', style: TextStyle(fontSize: 12))
+                                      Text('${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(ot.inicioOt))}', style: TextStyle(fontSize: 12))
                                     ],
                                   ),
                                   Row(
                                     children: <Widget>[
                                       Text('Fin OT: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                                      Text('${DateFormat('dd/MM/yyyy hh:mm').format(DateTime.parse(ot.finOt))}', style: TextStyle(fontSize: 12))
+                                      Text('${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(ot.finOt))}', style: TextStyle(fontSize: 12))
                                     ],
                                   ),
                                   

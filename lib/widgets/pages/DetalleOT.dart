@@ -43,6 +43,22 @@ class _DetalleOT extends State<DetalleOT> {
     super.dispose();
   }
 
+  // Future<ChecksModel> _listaDetalleOT() async { 
+  //   if(baseUrl != null) {
+  //     var response = await http.get('$baseUrl?ot=${widget.id}&subot=${widget.subID}');
+  //     if(response.statusCode == 200 && mounted) {
+  //       _detalleChecks = ChecksModel.fromJson(json.decode(response.body));
+  //       setState(() {
+  //         _cantChecks = _detalleChecks.data[0].checkList.length;
+  //         _cantGeop = _detalleChecks.data[0].geop.length;
+  //       });
+  //     } else {
+  //       _detalleChecks = ChecksModel();
+  //     }
+  //     return _detalleChecks;
+  //   }    
+  // }
+
   Future<ChecksModel> _listaDetalleOT() async { 
     if(baseUrl != null) {
       var response = await http.get('$baseUrl?ot=${widget.id}&subot=${widget.subID}');
@@ -56,8 +72,7 @@ class _DetalleOT extends State<DetalleOT> {
         _detalleChecks = ChecksModel();
       }
       return _detalleChecks;
-    }
-    
+    }    
   }
 
   Widget _buildDetalleOT() {
@@ -101,9 +116,7 @@ class _DetalleOT extends State<DetalleOT> {
                   scrollDirection: Axis.horizontal,
                   itemCount: _cantChecks,
                   itemBuilder: (context, index) {
-                    if(snapshot.data == null) {
-                      return Center(child: CircularProgressIndicator(),);
-                    } else {
+                    if(snapshot.hasData) {                      
                       ChecksModel datos = snapshot.data;
                       return Padding(
                         padding: EdgeInsets.only(left: 2),
@@ -115,7 +128,9 @@ class _DetalleOT extends State<DetalleOT> {
                             child: Text(datos.data[0].checkList[index].clave)),
                           onSelected: (b) {},
                         ));
-                    }
+                    } else {
+                      return Center(child: CircularProgressIndicator(),);
+                    } 
                   },
                 )
               ),
@@ -181,7 +196,7 @@ class _DetalleOT extends State<DetalleOT> {
                 maxLines: 2,
               );
             } else {
-              return Text('Sispro Mobile');
+              return CircularProgressIndicator();
             }
             
           },

@@ -6,6 +6,7 @@ import 'package:sispromovil/repositories/plantas/Plantas_Repository.dart';
 
 class BlocOTPendientes {
   static final BlocOTPendientes _bloc = new BlocOTPendientes._internal();
+  
   BehaviorSubject<PendientesModel> _otPendientes = BehaviorSubject<PendientesModel>();
   BehaviorSubject<PendientesModel> _otPendientesFiltradas = BehaviorSubject<PendientesModel>();
   BehaviorSubject<String> _filtro = BehaviorSubject<String>();

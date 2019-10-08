@@ -3,9 +3,9 @@ import 'package:sqflite/sqflite.dart';
 import 'package:sispromovil/repositories/initDB.dart';
 import 'package:sispromovil/models/BusquedaModel.dart';
 
-class BusquedaProvider {
-  BusquedaProvider._();
-  static final BusquedaProvider db = BusquedaProvider._();
+class BusquedaProviderBD {
+  BusquedaProviderBD._();
+  static final BusquedaProviderBD db = BusquedaProviderBD._();
   Database _database;
   InitDB initDB = InitDB();
 
@@ -22,12 +22,36 @@ class BusquedaProvider {
     return listaBusquedas;
   }
 
-  addBusqueda(String query) async {
+  Future<BusquedaModel> getBusqueda(int id) async {
+    var db = await database;
+    var res = await db.rawQuery('SELECT * FROM Busquedas WHERE id = $id');
+    BusquedaModel busqueda;
+    if(res.length > 0) {
+      busqueda = BusquedaModel.fromJson(res[0]);
+    }
+    return busqueda;
+  }
+
+  Future<BusquedaModel> getBusquedaTexto(String texto) async {
+    var db = await database;
+    var res = await db.rawQuery('SELECT * FROM Busquedas WHERE busqueda = "$texto"');
+    BusquedaModel busqueda;
+    if(res.length > 0) {
+      busqueda = BusquedaModel.fromJson(res[0]);
+    }
+    return busqueda;
+  }
+
+  Future<int> addBusqueda(String query) async {
     final db = await database;
-    // var table = await db.rawQuery('SELECT MAX(id) +1 from Busquedas');
-    // var idSiguiente = table.first['id'];
-    var res = await db.rawInsert('INSERT INTO Busquedas (busqueda) VALUES (?)', [query]);
-    print(res);
+    int res;
+    BusquedaModel result = await getBusquedaTexto(query);
+    if(result?.busqueda == null) {
+      res = await db.rawInsert('INSERT INTO Busquedas (busqueda) VALUES (?)', [query]);
+    } else {
+      res = result.id;
+    }
+    return res;
   }
 
   deleteBusqueda(int id) async {

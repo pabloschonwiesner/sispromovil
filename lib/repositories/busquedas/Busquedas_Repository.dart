@@ -2,19 +2,23 @@ import 'package:sispromovil/models/BusquedaModel.dart';
 import 'package:sispromovil/repositories/busquedas/Busquedas_Repository_sqlite.dart';
 
 class BusquedaRepository {
-  final BusquedaProvider busquedaProvider = BusquedaProvider.db;
+  final BusquedaProviderBD busquedaProviderBD = BusquedaProviderBD.db;
 
   BusquedaRepository();
 
   Future<List<BusquedaModel>> getBusquedas() {
-    return busquedaProvider.getBusquedas();
+    return busquedaProviderBD.getBusquedas();
   }
 
-  void addBusqueda(String query) {
-    busquedaProvider.addBusqueda(query);
+  Future<BusquedaModel> getBusqueda(int id) {
+    return busquedaProviderBD.getBusqueda(id);
+  }
+
+  Future<int> addBusqueda(String query) {
+    return busquedaProviderBD.addBusqueda(query);
   }
 
   void deleteBusqueda(int id) {
-    busquedaProvider.deleteBusqueda(id);
+    busquedaProviderBD.deleteBusqueda(id);
   }
 }

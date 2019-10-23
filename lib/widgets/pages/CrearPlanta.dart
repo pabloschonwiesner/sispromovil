@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sispromovil/models/PlantaModel.dart';
 import 'package:sispromovil/models/RegistroModel.dart';
+import 'package:sispromovil/providers/PlantaProvider.dart';
+import 'package:sispromovil/repositories/plantas/Plantas_Repository.dart';
 import 'package:sispromovil/widgets/pages/Home.dart';
-import 'package:sispromovil/blocs/plantas/BlocPlanta.dart';
-import 'package:sispromovil/blocs/plantas/BlocPlantaProvider.dart';
 import 'package:sispromovil/repositories/registro/Registro_Repository.dart';
 
 class CrearPlanta extends StatefulWidget {
@@ -17,13 +17,15 @@ class _CrearPlanta extends State<CrearPlanta> with TickerProviderStateMixin {
   TextEditingController _codigoController = TextEditingController();
   GlobalKey<FormState> _keyForm = GlobalKey<FormState>();
   GlobalKey<ScaffoldState> _keyScaffold = GlobalKey<ScaffoldState>();
+  PlantasRepository _repoPlanta = PlantasRepository();
   
   @override
   void initState() {
     super.initState();
   }
 
-  void _guardarPlanta() async {   
+  void _guardarPlanta(BuildContext context) async {   
+    PlantaProvider pp = Provider.of<PlantaProvider>(context);
     RegistroRepository _repositoryRegistro = RegistroRepository();
     RegistroModel _registro = await _repositoryRegistro.fetchRegistro(_codigoController.text);
     if(_registro.data.isNotEmpty) {
@@ -35,7 +37,9 @@ class _CrearPlanta extends State<CrearPlanta> with TickerProviderStateMixin {
         "seleccionada": 0
       };
       PlantaModel planta = PlantaModel.fromMap(paramsMap);
-      blocPlanta.agregarPlanta(planta);
+      await _repoPlanta.addPlanta(planta);
+      pp.getPlantaSeleccionada();
+      print('desde crearplanta: ${pp.getPlanta.planta}');
       Navigator.push(context, MaterialPageRoute(
         builder: (context) => Home()
       ));
@@ -77,7 +81,7 @@ class _CrearPlanta extends State<CrearPlanta> with TickerProviderStateMixin {
                     validator: (String value) {
                       if(value.isEmpty) {
                         return 'Ingrese la planta';
-                      }
+                      } 
                     }
                   ),
                   TextFormField(  
@@ -96,7 +100,7 @@ class _CrearPlanta extends State<CrearPlanta> with TickerProviderStateMixin {
                     validator: (String value) {
                       if(value.isEmpty) {
                         return 'Ingrese el codigo';
-                      }
+                      } 
                     }
                   ),
                   SizedBox(height: 20,),
@@ -107,7 +111,7 @@ class _CrearPlanta extends State<CrearPlanta> with TickerProviderStateMixin {
                     color: Theme.of(context).primaryColor,
                     onPressed: () {
                       if(_keyForm.currentState.validate()) {
-                        return _guardarPlanta();
+                        return _guardarPlanta(context);
                       } else {
                         return null;
                       }

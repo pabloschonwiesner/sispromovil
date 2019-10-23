@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sispromovil/providers/BusquedaProvider.dart';
+import 'package:sispromovil/providers/NotificacionesProvider.dart';
+import 'package:sispromovil/providers/PlantaProvider.dart';
+import 'package:sispromovil/repositories/plantas/Plantas_Repository.dart';
 import 'package:sispromovil/widgets/pages/OrdenesPendientes.dart';
 import 'package:sispromovil/widgets/pages/OrdenesPendientesPlanificadas.dart';
 import 'package:sispromovil/widgets/pages/OrdenesEnCurso.dart';
@@ -8,10 +11,7 @@ import 'package:sispromovil/widgets/pages/Search.dart';
 import 'package:sispromovil/models/PlantaModel.dart';
 import 'package:sispromovil/widgets/pages/CrearPlanta.dart';
 import 'package:sispromovil/widgets/pages/EditarPlanta.dart';
-import 'package:sispromovil/blocs/plantas/BlocPlantaProvider.dart';
-import 'package:sispromovil/blocs/plantas/BlocPlanta.dart';
 import 'package:sispromovil/widgets/pages/Notificaciones.dart';
-import 'package:sispromovil/blocs/notificaciones/BlocNotificaciones.dart';
 import 'package:sispromovil/utils/Utils.dart';
 
  class Home extends StatefulWidget {
@@ -21,11 +21,11 @@ import 'package:sispromovil/utils/Utils.dart';
 
 class _HomeState extends State<Home>  {
   int _solapaSeleccionada = 0;
+  PlantasRepository _repoPlanta = PlantasRepository();
 
   @override
   void initState() {
     super.initState();    
-    blocNotificaciones.initialData();
   }
 
   @override
@@ -66,32 +66,24 @@ class _HomeState extends State<Home>  {
   @override
   Widget build(BuildContext context) {
     BusquedaProvider bp = Provider.of<BusquedaProvider>(context);
+    PlantaProvider pp = Provider.of<PlantaProvider>(context);
+    NotificacionesProvider np = Provider.of<NotificacionesProvider>(context);
 
     ScreenUtil.instance = ScreenUtil(width: 360, height: 592, allowFontScaling: true)..init(context);
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
         appBar: AppBar(        
-          title: StreamBuilder(
-            stream: blocPlanta.planta,
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if(snapshot.hasData) {
-                return RichText(                  
-                  text: TextSpan(                    
-                    text: 'Sispro Mobile \n',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    children: <TextSpan>[
-                      TextSpan(text: '${snapshot.data}', style: TextStyle(fontSize: 12)),
-                    ],
-                  ),
-                  maxLines: 2,
-                );
-              } else {
-                return Text('Sispro Mobile');
-              }
-              
-            },
-          ),        
+          title: RichText(                  
+            text: TextSpan(                    
+              text: 'Sispro Mobile \n',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              children: <TextSpan>[
+                TextSpan(text: '${pp.getPlanta.planta}', style: TextStyle(fontSize: 12)),
+              ],
+            ),
+            maxLines: 2,
+          ), 
           actions: <Widget>[   
             IconButton(
               icon: bp.getBusqueda.busqueda != '' && bp.getBusqueda.busqueda != null
@@ -117,41 +109,46 @@ class _HomeState extends State<Home>  {
                 Positioned(
                   right: 7,
                   top: 10,
-                  child: StreamBuilder(
-                    stream: blocNotificaciones.cantidadNotificaciones,
-                    builder: (context, snapshot) {
-                      // if(snapshot.connectionState == ConnectionState.done) {
-                      //   print('Done');
-                      // }
-                      // if(snapshot.connectionState == ConnectionState.waiting) {
-                      //   print('Waiting');
-                      // }
-                      // if(snapshot.connectionState == ConnectionState.active) {
-                      //   print('Active');
-                      // }
-
-                      if(snapshot.hasData && snapshot.data > 0) {
-                          return Container(
-                            width: 18,
-                            height: 18,
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(18)
-                            ),
-                            child: Center(
-                              child: Text(
-                                snapshot.data.toString(),
-                                style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold), 
-                                textAlign: TextAlign.center,
-                              ),
-                            )
-                          );
-                        } else {
-                          return Container(width: 0, height: 0,);
-                        }
+                  child: Container(
+                    width: 18,
+                    height: 18,
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(18)
+                    ),
+                    child: Center(
+                      child: Text(
+                        '${np.cantNotificaciones}',
+                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold), 
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  )
+                  // child: StreamBuilder(
+                  //   stream: blocNotificaciones.cantidadNotificaciones,
+                  //   builder: (context, snapshot) {
+                  //     if(snapshot.hasData && snapshot.data > 0) {
+                          // return Container(
+                          //   width: 18,
+                          //   height: 18,
+                          //   decoration: BoxDecoration(
+                          //     color: Colors.red,
+                          //     borderRadius: BorderRadius.circular(18)
+                          //   ),
+                          //   child: Center(
+                          //     child: Text(
+                          //       snapshot.data.toString(),
+                          //       style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold), 
+                          //       textAlign: TextAlign.center,
+                          //     ),
+                          //   )
+                          // );
+                  //       } else {
+                  //         return Container(width: 0, height: 0,);
+                  //       }
                       
-                    },
-                  ),
+                  //   },
+                  // ),
                 ),
                 Positioned(
                   left: 4,
@@ -208,29 +205,38 @@ class _HomeState extends State<Home>  {
               Divider(height: 10,),
               Container(
                 height: MediaQuery.of(context).size.height,
-                child: StreamBuilder(
-                  stream: blocPlanta.listaPlantas,
+                child: FutureBuilder(
+                  future: _repoPlanta.getPlantas(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {  
+                    print('se redibuja futureBuilder de home');
                     if(snapshot.hasData) {
+                      List<PlantaModel> lst = snapshot.data;
+                      if(snapshot.data.length > 1) {
+                        int indice = snapshot.data.indexWhere((planta) => planta.id.toString() == '1');
+                        if(indice != null && indice != -1) {
+                          lst.removeAt(indice);
+                        }
+                      }
                       return ListView.builder(                                     
-                        itemCount: snapshot.data.length,
+                        itemCount: lst.length,
                         itemBuilder: (BuildContext context, int index) {                      
-                          PlantaModel param = snapshot.data[index];
+                          PlantaModel planta = lst[index];
                           return ListTile(
-                            leading: param.seleccionada == 1 
+                            leading: planta.seleccionada == 1 
                               ? Icon(Icons.radio_button_checked, color: Colors.blueAccent, )
                               : Icon(Icons.radio_button_unchecked, color: Colors.grey),
-                            title: Text('${param.planta}'),
+                            title: Text('${planta.planta}'),
                             trailing: IconButton(
                               icon: Icon(Icons.edit),
                               onPressed: () {Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => EditarPlanta(param)
+                                builder: (context) => EditarPlanta(planta)
                               ));
                               }
                             ),
                             onTap: () {
-                              blocPlanta.seleccionarPlanta(param.id);
-                              Navigator.pop(context);
+                              _repoPlanta.selectPlanta(planta.id);
+                              pp.setPlanta(planta);
+                              Navigator.of(context).pop();
                             },
                           );
                         },

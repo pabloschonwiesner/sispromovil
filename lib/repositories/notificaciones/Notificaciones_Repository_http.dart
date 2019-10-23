@@ -18,7 +18,6 @@ class NotificacionesApiProvider {
 
   Future marcarNotificacion(String url, String codigo) async {
     final response = await http.post(url, headers: {"Content-Type": "application/x-www-form-urlencoded"}, body: {'codigo': codigo} );
-    print('StatusCode: ${response.statusCode}');
     return response.body;
   }
 

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:sispromovil/blocs/plantas/BlocPlanta.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:sispromovil/models/ChecksModel.dart';
+import 'package:sispromovil/models/PlantaModel.dart';
+import 'package:sispromovil/providers/PlantaProvider.dart';
+import 'package:sispromovil/repositories/plantas/Plantas_Repository.dart';
 
 class DetalleOT extends StatefulWidget {
   final String id;
@@ -21,65 +23,39 @@ class DetalleOT extends StatefulWidget {
 }
 
 class _DetalleOT extends State<DetalleOT> {
-  String baseUrl;
+  PlantasRepository _repoPlanta = PlantasRepository();
+  PlantaModel plantaActual;
+  bool _isLoading = false;
+
+  String url;
   int _cantChecks = 0;
   int _cantGeop = 0;
-  ChecksModel _detalleChecks;
+  ChecksModel _detalleChecks = ChecksModel(data: []);
+
+  Future<void> getData() async {
+    plantaActual = await _repoPlanta.getPlantaSelect();
+    var response = await http.get('${plantaActual.servidor}/detalle?ot=${widget.id}&subid=${widget.subID}');
+    if(response.statusCode == 200) {
+      _detalleChecks = ChecksModel.fromJson(json.decode(response.body));
+      _cantChecks = _detalleChecks.data[0].checkList.length;
+      _cantGeop = _detalleChecks.data[0].geop.length;
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
   
   
   @override
   void initState() {
-    blocPlanta.servidor.listen((servidor) {
-      print('Servidor desde detalleOT: $servidor');
-      setState(() {
-        baseUrl = servidor + '/detalle';
-      });
-      _listaDetalleOT();
-    });
     super.initState();
-  }
-
-  void dispose() {
-    super.dispose();
-  }
-
-  // Future<ChecksModel> _listaDetalleOT() async { 
-  //   if(baseUrl != null) {
-  //     var response = await http.get('$baseUrl?ot=${widget.id}&subot=${widget.subID}');
-  //     if(response.statusCode == 200 && mounted) {
-  //       _detalleChecks = ChecksModel.fromJson(json.decode(response.body));
-  //       setState(() {
-  //         _cantChecks = _detalleChecks.data[0].checkList.length;
-  //         _cantGeop = _detalleChecks.data[0].geop.length;
-  //       });
-  //     } else {
-  //       _detalleChecks = ChecksModel();
-  //     }
-  //     return _detalleChecks;
-  //   }    
-  // }
-
-  Future<ChecksModel> _listaDetalleOT() async { 
-    if(baseUrl != null) {
-      var response = await http.get('$baseUrl?ot=${widget.id}&subot=${widget.subID}');
-      if(response.statusCode == 200 && mounted) {
-        _detalleChecks = ChecksModel.fromJson(json.decode(response.body));
-        setState(() {
-          _cantChecks = _detalleChecks.data[0].checkList.length;
-          _cantGeop = _detalleChecks.data[0].geop.length;
-        });
-      } else {
-        _detalleChecks = ChecksModel();
-      }
-      return _detalleChecks;
-    }    
-  }
+    _isLoading = true;
+    getData();
+  } 
 
   Widget _buildDetalleOT() {
-    return FutureBuilder(
-      future: _listaDetalleOT(),
-      builder: (context, snapshot) {
-        return Padding(
+    return _isLoading ? Center(child: CircularProgressIndicator(),)
+    :  Padding(
           padding: EdgeInsets.all(10),
           child: Column(            
             children: <Widget>[
@@ -115,22 +91,18 @@ class _DetalleOT extends State<DetalleOT> {
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: _cantChecks,
-                  itemBuilder: (context, index) {
-                    if(snapshot.hasData) {                      
-                      ChecksModel datos = snapshot.data;
-                      return Padding(
-                        padding: EdgeInsets.only(left: 2),
-                        child: FilterChip(
-                          backgroundColor: datos.data[0].checkList[index].valor == "0" ? Colors.grey[300] : Colors.lightGreenAccent,
-                          labelStyle: TextStyle(fontSize: 12, color: Colors.black,),
-                          label: Padding(
-                            padding: EdgeInsets.all(4),
-                            child: Text(datos.data[0].checkList[index].clave)),
-                          onSelected: (b) {},
-                        ));
-                    } else {
-                      return Center(child: CircularProgressIndicator(),);
-                    } 
+                  itemBuilder: (context, index) {             
+                    ChecksModel datos = _detalleChecks;
+                    return Padding(
+                      padding: EdgeInsets.only(left: 2),
+                      child: FilterChip(
+                        backgroundColor: datos.data[0].checkList[index].valor == "0" ? Colors.grey[300] : Colors.lightGreenAccent,
+                        labelStyle: TextStyle(fontSize: 12, color: Colors.black,),
+                        label: Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Text(datos.data[0].checkList[index].clave)),
+                        onSelected: (b) {},
+                      ));
                   },
                 )
               ),
@@ -143,66 +115,55 @@ class _DetalleOT extends State<DetalleOT> {
                 child: ListView.builder(
                   itemCount: _cantGeop,
                   itemBuilder: (context, index) {
-                    if(snapshot.data == null) {
-                      return Center(child: CircularProgressIndicator());
-                    } else {
-                      ChecksModel datos = snapshot.data;
-                      return  Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          RichText(
-                            textAlign: TextAlign.start,
-                            overflow: TextOverflow.ellipsis,
-                            text: TextSpan(
-                              text: '${datos.data[0].geop[index].clave}:   ',
-                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),                            
-                              children: <TextSpan>[
-                                TextSpan(
-                                  text: '${datos.data[0].geop[index].valor}',
-                                  style: TextStyle(fontSize: 13, color: Colors.black, fontWeight: FontWeight.normal)
-                                )
-                              ]
-                            )
+                    ChecksModel datos = _detalleChecks;
+                    return  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        RichText(
+                          textAlign: TextAlign.start,
+                          overflow: TextOverflow.ellipsis,
+                          text: TextSpan(
+                            text: '${datos.data[0].geop[index].clave}:   ',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),                            
+                            children: <TextSpan>[
+                              TextSpan(
+                                text: '${datos.data[0].geop[index].valor}',
+                                style: TextStyle(fontSize: 13, color: Colors.black, fontWeight: FontWeight.normal)
+                              )
+                            ]
                           )
-                        ],
-                      );
-                    }                  
-                  },
-                ),
+                        )
+                      ],
+                    );
+                  } 
+                )
               )
             ],
           ),
         );
-      },
-    );
   }
 
   @override
   Widget build(BuildContext context) {
+    PlantaProvider pp = Provider.of<PlantaProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: StreamBuilder(
-          stream: blocPlanta.planta,
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if(snapshot.hasData) {
-              return RichText(
-                text: TextSpan(
-                  text: 'Sispro Mobile \n',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  children: <TextSpan>[
-                    TextSpan(text: '${snapshot.data}', style: TextStyle(fontSize: 12)),
-                  ],
-                ),
-                maxLines: 2,
-              );
-            } else {
-              return CircularProgressIndicator();
-            }
-            
-          },
-        ),  
+        title: RichText(
+          text: TextSpan(
+            text: 'Sispro Mobile \n',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            children: <TextSpan>[
+              TextSpan(text: '${pp.getPlanta.planta}', style: TextStyle(fontSize: 12)),
+            ],
+          ),
+          maxLines: 2,
+        )          
       ),
       body: _buildDetalleOT()
     );
+  }
+
+  void dispose() {
+    super.dispose();
   }
 }

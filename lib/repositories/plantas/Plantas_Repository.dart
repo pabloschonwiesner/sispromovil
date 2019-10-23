@@ -3,7 +3,7 @@ import 'package:sispromovil/repositories/plantas/Plantas_Repository_sqlite.dart'
 
 
 class PlantasRepository {
-  final PlantaProvider plantaProvider = PlantaProvider.db;
+  final PlantaProviderBD plantaProvider = PlantaProviderBD.db;
 
   PlantasRepository();
 

@@ -9,7 +9,6 @@ class OTPendientesApiProvider {
   Future<PendientesModel> fetchOTPendientes(String url) async {
     final response = await client.get(url);
     if(response.statusCode == 200) {
-      // print(response.body);
       return PendientesModel.fromJson(json.decode(response.body));
     } else {
       throw Exception('Error en la peticion a la base de datos, fetchOPPendientes');
@@ -19,7 +18,6 @@ class OTPendientesApiProvider {
   Future<PendientesModel> fetchOTPendientesFiltradas(String url) async {
     final response = await client.get(url);
     if(response.statusCode == 200) {
-      // print(response.body);
       return PendientesModel.fromJson(json.decode(response.body));
     } else {
       throw Exception('Error en la peticion a la base de datos, fetchOPPendientes');

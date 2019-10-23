@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sispromovil/models/PlantaModel.dart';
 import 'package:sispromovil/models/RegistroModel.dart';
+import 'package:sispromovil/providers/PlantaProvider.dart';
+import 'package:sispromovil/repositories/plantas/Plantas_Repository.dart';
 import 'package:sispromovil/repositories/registro/Registro_Repository.dart';
 import 'package:sispromovil/widgets/pages/Home.dart';
-import 'package:sispromovil/blocs/plantas/BlocPlanta.dart';
-import 'package:sispromovil/blocs/plantas/BlocPlantaProvider.dart';
 
 class EditarPlanta extends StatefulWidget {
   final PlantaModel planta;
@@ -20,6 +20,7 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
   TextEditingController _servidorController = TextEditingController();
   GlobalKey<FormState> _keyForm = GlobalKey<FormState>();
   GlobalKey<ScaffoldState> _keyScaffold = GlobalKey<ScaffoldState>();
+  PlantasRepository _repoPlanta = PlantasRepository();
 
   @override
   void initState() {
@@ -46,7 +47,7 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
         "seleccionada": widget.planta.seleccionada
       };
       PlantaModel planta = PlantaModel.fromMap(paramsMap);
-      blocPlanta.actualizarPlanta(planta);
+      _repoPlanta.updatePlanta(planta);
       Navigator.push(context, MaterialPageRoute(
         builder: (context) => Home()
       ));
@@ -59,6 +60,7 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    PlantaProvider pp = Provider.of<PlantaProvider>(context);
     return Scaffold(
       key: _keyScaffold,
       resizeToAvoidBottomPadding: true,
@@ -80,7 +82,8 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
                         icon: Icon(Icons.check), 
                         color: Colors.green, 
                         onPressed: () {
-                          blocPlanta.deletePlanta(widget.planta);
+                          _repoPlanta.deletePlanta(widget.planta);
+                          pp.getPlantaSeleccionada();
                           Navigator.push(context, MaterialPageRoute(
                             builder: (context) => Home()
                           ));
@@ -119,7 +122,7 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
                   validator: (String value) {
                       if(value.isEmpty) {
                         return 'Ingrese la planta';
-                      }
+                      } 
                     }
                 ),
                 TextFormField(  
@@ -138,7 +141,7 @@ class _EditarPlanta extends State<EditarPlanta> with TickerProviderStateMixin {
                   validator: (String value) {
                       if(value.isEmpty) {
                         return 'Ingrese el codigo';
-                      }
+                      } 
                     }
                 ),
                 widget.planta.id != 1 ?

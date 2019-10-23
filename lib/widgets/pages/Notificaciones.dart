@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' show Client;
 import 'package:sispromovil/models/NotificacionesModel.dart';
-import 'package:sispromovil/blocs/notificaciones/BlocNotificaciones.dart';
-import 'package:sispromovil/blocs/plantas/BlocPlanta.dart';
 import 'package:intl/intl.dart';
-import 'dart:async';
+import 'package:sispromovil/providers/NotificacionesProvider.dart';
+
+import 'package:sispromovil/providers/PlantaProvider.dart';
+import 'package:sispromovil/repositories/notificaciones/Notificaciones_Repository.dart';
+import 'package:sispromovil/widgets/shared/PullToRefreshImage.dart';
 
 class Notificaciones extends StatefulWidget {
   @override
@@ -12,31 +13,24 @@ class Notificaciones extends StatefulWidget {
 }
 
 class _Notificaciones extends State<Notificaciones> {
-  Client client = Client();
-  String url;
-  final _saved = Set<String>();
-  Timer _timer;
-
+  NotificacionesRepository _repoNotificaciones = NotificacionesRepository();
 
   @override
   void dispose() {
     super.dispose();
-    client.close();
-    _timer.cancel();
   }
 
   @override
   void initState() {
     super.initState();
-    blocNotificaciones.initialData();
+    // getData();
   }
 
-  Widget _buildListaNotificaciones(NotificacionesModel notif) {
+  Widget _buildListaNotificaciones(NotificacionesModel notif, NotificacionesProvider np, String url) {
     return ListView.builder(
       itemCount: notif.data.length,
       itemBuilder: (context, index) {
         var notificacion = notif.data[index];
-        _saved.add(notificacion.codigo.toString());
         return Column(
           children: <Widget>[
             ListTile(
@@ -47,18 +41,18 @@ class _Notificaciones extends State<Notificaciones> {
               subtitle: Row(
                 children: <Widget>[
                   Text(
-                    '${DateFormat('dd/MM/yyyy hh:mm:ss').format(DateTime.parse(notif.data[index].fechaHora))}',
+                    '${DateFormat('dd/MM/yyyy HH:mm:ss').format(DateTime.parse(notificacion.fechaHora))}',
                     style: TextStyle(fontSize: 11),),
                   Text(
-                    ' - ${notif.data[index].maquina}',
+                    ' - ${notificacion.maquina}',
                     style: TextStyle(fontSize: 11)
                   ),
                   Text(
-                    ' - ${notif.data[index].id} - ',
+                    ' - ${notificacion.id} - ',
                     style: TextStyle(fontSize: 11)
                   ),
                   Text(
-                    '${notif.data[index].subId}',
+                    '${notificacion.subId}',
                     style: TextStyle(fontSize: 11)
                   )
                 ],
@@ -67,7 +61,8 @@ class _Notificaciones extends State<Notificaciones> {
                 splashColor: Theme.of(context).primaryColor,
                 icon: Icon(Icons.delete, ),
                 onPressed: () {
-                  blocNotificaciones.marcar(notif.data[index].codigo.toString());
+                  _repoNotificaciones.marcar('$url/notificaciones', notificacion.codigo.toString());
+                  np.getNotificacionesAPI();
                 }
               ),
             ),
@@ -84,33 +79,29 @@ class _Notificaciones extends State<Notificaciones> {
 
   @override
   Widget build(BuildContext context) {
+    PlantaProvider pp = Provider.of<PlantaProvider>(context);
+    NotificacionesProvider np = Provider.of<NotificacionesProvider>(context);
+    
+
     return Scaffold(
       appBar: AppBar(        
-        title: StreamBuilder(
-          stream: blocPlanta.planta,
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if(snapshot.hasData) {
-              return RichText(
-                text: TextSpan(
-                  text: 'Sispro Mobile \n',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  children: <TextSpan>[
-                    TextSpan(text: '${snapshot.data}', style: TextStyle(fontSize: 12)),
-                  ],
-                ),
-                maxLines: 2,
-              );
-            } else {
-              return Text('Sispro Mobile');
-            }            
-          },
-        ),  
+        title: RichText(
+            text: TextSpan(
+              text: 'Sispro Mobile \n',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              children: <TextSpan>[
+                TextSpan(text: '${pp.getPlanta.planta}', style: TextStyle(fontSize: 12)),
+              ],
+            ),
+            maxLines: 2,
+          ),  
         actions: <Widget>[
           GestureDetector(
             child: Icon(Icons.access_time, color: Theme.of(context).primaryColor,),
             onDoubleTap: () {
               print('desde notificaciones on long press');
-              blocNotificaciones.desmarcarTodas();
+              _repoNotificaciones.desmarcarTodas('${pp.getPlanta.servidor}/desmarcarNotificaciones');
+              np.getNotificacionesAPI();
             },
           ),
           Padding(
@@ -123,41 +114,23 @@ class _Notificaciones extends State<Notificaciones> {
                 borderRadius: BorderRadius.circular(35)
               ),
               child: Center(
-                child: StreamBuilder(
-                  stream: blocNotificaciones.cantidadNotificaciones,
-                  builder: (context, snapshot) {
-                    if(snapshot.hasData && snapshot.data > 0){
-                      return Text(
-                        snapshot.data.toString(),
-                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold), 
-                        textAlign: TextAlign.center,
-                      );
-                    } else {
-                      return Text(
-                        '0',
-                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold), 
-                        textAlign: TextAlign.center,
-                      );
-                    }
-                  },
-                )
+                child: Text('${np.cantNotificaciones}')
               )
             ),
           )
         ],      
       ),
-      body: StreamBuilder(
-        stream: blocNotificaciones.notificaciones,
-        builder: (context, snapshot) {
-          if(!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            return _buildListaNotificaciones(snapshot.data);
-          }
-        },
-      )
+      body: np.isLoading ? Center(child: CircularProgressIndicator())
+        : RefreshIndicator(
+          onRefresh: np.getNotificacionesAPI,
+          child: np.hasData
+          ? _buildListaNotificaciones(np.getNotificaciones, np, pp.getPlanta.servidor)
+          : ListView(
+            children: <Widget>[
+              PullToRefreshImage(texto: 'notificaciones')
+            ],
+          ),
+        )
     );  
   }
 

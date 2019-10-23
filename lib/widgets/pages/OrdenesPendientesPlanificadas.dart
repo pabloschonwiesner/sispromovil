@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:sispromovil/models/BusquedaModel.dart';
 import 'package:sispromovil/models/PendientesPlanificadasModel.dart';
 import 'package:intl/intl.dart';
-import 'package:sispromovil/blocs/ordenesPendientesPlanificadas/BlocOTPendientesPlanificadas.dart';
+import 'package:sispromovil/models/PlantaModel.dart';
+import 'package:sispromovil/providers/BusquedaProvider.dart';
+import 'package:sispromovil/providers/PlantaProvider.dart';
+import 'package:sispromovil/repositories/otPendientesPlanificadas/OT_Pendientes_Planificadas_Repository.dart';
+import 'package:sispromovil/repositories/plantas/Plantas_Repository.dart';
 import 'package:sispromovil/widgets/pages/DetalleOT.dart';
+import 'package:sispromovil/widgets/shared/PullToRefreshImage.dart';
 
 class OrdenesPendientesPlanificadas extends StatefulWidget {
   static const String routeName = '/pendientesPlanificadas';
@@ -11,17 +17,34 @@ class OrdenesPendientesPlanificadas extends StatefulWidget {
 }
 
 class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas> {
+  OTPendientesPlanificadasRepository _repoPendientesPlanificadas = OTPendientesPlanificadasRepository();
+  PlantasRepository _repoPlanta = PlantasRepository();
+  PendientesPlanificadasModel listaPendientesAux;
+  PendientesPlanificadasModel listaPendientes;
+  BusquedaProvider busqueda;
+  BusquedaModel getBusqueda;
+  PlantaProvider planta;
+  PlantaModel plantaActual;
+
+  bool _isLoading = false;
+  var url;
+  int cantRegistros = 0;
+
+  Future<void> getData() async {
+    plantaActual = await _repoPlanta.getPlantaSelect();
+    listaPendientesAux = await _repoPendientesPlanificadas.fetchAllOTPendientesPlanificadas(plantaActual.servidor + '/pendientesPlanificadas');
+    setState(() {
+      _isLoading = false; 
+    });
+  }
 
   @override
   void initState() {
-    blocPendientesPlanificadas.initialData();
-    super.initState();
+    super.initState();    
+    _isLoading = true;
+    getData();
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
+  
 
   String _hsSexagesimales(double hs) {
     var minutos = ((hs - hs.floor()) * 60).round();
@@ -29,7 +52,6 @@ class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas
     minutos<10 ? strMinutos = '0' + minutos.toString() :strMinutos =minutos.toString();
     return hs.floor().toString() + ':' + strMinutos; 
   }
-
 
   //con card
   Widget _itemOT(Ots ot) {
@@ -165,25 +187,62 @@ class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas
 
   @override
  Widget build(BuildContext context) {
-  return StreamBuilder(
-    stream: blocPendientesPlanificadas.pendientesFiltradas,
-    builder: (context, snapshot) {
-      if(!snapshot.hasData) {
-        return Container(
-          child: Center(
-            child: CircularProgressIndicator()
-          )
-        );
-      } else {
-        return Column(
+    busqueda = Provider.of<BusquedaProvider>(context);
+    getBusqueda = busqueda.getBusqueda;
+    planta = Provider.of<PlantaProvider>(context);    
+
+    if(plantaActual?.id != null && planta.getPlanta.id != null && plantaActual.id != planta.getPlanta.id) {
+      plantaActual = planta.getPlanta;
+    }
+    
+    if(getBusqueda.busqueda != null && getBusqueda.busqueda != '' && listaPendientesAux != null) {
+      listaPendientesAux.data.map(
+          (maquina)  {
+            if(maquina.ots.isNotEmpty) {
+              maquina.ots.retainWhere((ot) {
+                return 
+                ot.id.toLowerCase().contains(getBusqueda.busqueda) || 
+                ot.cliente.toLowerCase().contains(getBusqueda.busqueda) || 
+                ot.trabajo.toLowerCase().contains(getBusqueda.busqueda);
+              });
+            }
+          }
+        ).toList();
+      listaPendientesAux.data.retainWhere((maquina) => maquina.ots.isNotEmpty);
+
+      listaPendientes = PendientesPlanificadasModel(
+        totalRegistros: listaPendientesAux.data.length,
+        data: listaPendientesAux.data
+      );
+    } else {
+      listaPendientes = listaPendientesAux;
+    }  
+
+  cantRegistros = listaPendientes?.data?.length;
+
+  return _isLoading ? Center(child: CircularProgressIndicator())
+  : RefreshIndicator(
+    onRefresh: getData,
+    child: cantRegistros > 0
+      ? Column(
           children: <Widget>[
             Flexible(
-              child: _listaRecursos(snapshot.data),
+              child: _listaRecursos(listaPendientes),
             )
           ],
-        );
-      }
-    }
+        )
+      : ListView(        
+          children: <Widget>[ 
+            Center(
+              child: PullToRefreshImage(texto: 'ordenes',)
+            )
+          ]
+        )
   );
  }
+
+ @override
+  void dispose() {
+    super.dispose();
+  }
 }

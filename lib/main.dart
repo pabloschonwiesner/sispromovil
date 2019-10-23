@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-// import 'package:sispromovil/models/BusquedaModel.dart';
 import 'package:sispromovil/providers/BusquedaProvider.dart';
-import 'package:sispromovil/widgets/pages/CrearPlanta.dart';
+import 'package:sispromovil/providers/NotificacionesProvider.dart';
+import 'package:sispromovil/providers/PlantaProvider.dart';
 import 'package:sispromovil/widgets/pages/OrdenesPendientes.dart';
-import 'package:sispromovil/widgets/pages/OrdenesPendientesPlanificadas.dart';
-import 'package:sispromovil/widgets/pages/OrdenesEnCurso.dart';
-import 'package:sispromovil/widgets/pages/OrdenesFinalizadas.dart';
-import 'package:sispromovil/blocs/plantas/BlocPlantaProvider.dart';
 import 'package:sispromovil/widgets/pages/Splash.dart';
 import 'package:provider/provider.dart';
 
 void main() => runApp(MultiProvider(
   providers: [
     ChangeNotifierProvider( builder: (context) => BusquedaProvider()),
+    ChangeNotifierProvider( builder: (context) => PlantaProvider()),
+    ChangeNotifierProvider( builder: (context) => NotificacionesProvider())
   ],
   child:   MaterialApp(  
     debugShowCheckedModeBanner: false,  
@@ -21,9 +19,7 @@ void main() => runApp(MultiProvider(
       accentColor: Colors.lightBlue[900],  
       backgroundColor: Colors.grey[300]  
     ),  
-    home: BlocPlantaProvider(  
-      child: Splash(),  
-    ),  
+    home: Splash(),
     routes: <String, WidgetBuilder> {  
       OrdenesPendientes.routeName: (BuildContext context) => OrdenesPendientes(),  
       // OrdenesPendientesPlanificadas.routeName: (BuildContext context) => OrdenesPendientesPlanificadas(),  

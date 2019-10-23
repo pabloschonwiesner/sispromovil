@@ -3,9 +3,9 @@ import 'package:sispromovil/models/PlantaModel.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sispromovil/repositories/initDB.dart';
 
-class PlantaProvider {
-  PlantaProvider._();
-  static final PlantaProvider db = PlantaProvider._();
+class PlantaProviderBD {
+  PlantaProviderBD._();
+  static final PlantaProviderBD db = PlantaProviderBD._();
   Database _database;
   InitDB initDB = InitDB();
   
@@ -26,7 +26,6 @@ class PlantaProvider {
     await db.rawInsert("INSERT INTO Parametros (id, planta, codigo, servidor,  seleccionada) VALUES (?,?,?,?,?)",
     [idSiguiente, planta.planta, planta.codigo, planta.servidor, 0]);
     var count = await db.rawQuery("SELECT * FROM Parametros WHERE id > 1 ORDER BY id LIMIT 1 ");
-    print('Count ${count.length} // ${count.first['id']}');
     await selectPlanta(count.first['id']);
   }
 
@@ -71,12 +70,7 @@ class PlantaProvider {
       res = await db.rawQuery("SELECT * from Parametros LIMIT 1");
     }
     var id = res.first['id'];
-    await deseleccionarTodas();
     await selectPlanta(id);
-    // db.rawUpdate('UPDATE Parametros SET seleccionada = 0').then(
-    //   (r) => db.rawUpdate('UPDATE Parametros SET seleccionada = 1 WHERE id = $id')
-    // );
-
   }
 
   selectPlanta(int id) async {

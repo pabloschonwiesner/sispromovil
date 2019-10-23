@@ -134,6 +134,7 @@ class _OrdenesFinalizadas extends State<OrdenesFinalizadas> {
 
     if(plantaActual?.id != null && planta.getPlanta.id != null && plantaActual.id != planta.getPlanta.id) {
       plantaActual = planta.getPlanta;
+      getData();
     }
     
     if(getBusqueda.busqueda != null && getBusqueda.busqueda != '' && listaFinalizadasAux != null) {

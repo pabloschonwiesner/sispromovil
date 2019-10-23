@@ -217,6 +217,7 @@ class _OrdenesEnCurso extends State<OrdenesEnCurso> {
 
     if(plantaActual?.id != null && planta.getPlanta.id != null && plantaActual.id != planta.getPlanta.id) {
       plantaActual = planta.getPlanta;
+      getData();
     }
 
     if(getBusqueda.busqueda != null && getBusqueda.busqueda != '' && _listaEnCursoAux != null) {

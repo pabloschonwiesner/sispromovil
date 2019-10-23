@@ -208,7 +208,6 @@ class _HomeState extends State<Home>  {
                 child: FutureBuilder(
                   future: _repoPlanta.getPlantas(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {  
-                    print('se redibuja futureBuilder de home');
                     if(snapshot.hasData) {
                       List<PlantaModel> lst = snapshot.data;
                       if(snapshot.data.length > 1) {

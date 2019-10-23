@@ -193,6 +193,7 @@ class _OrdenesPendientesPlanificadas extends State<OrdenesPendientesPlanificadas
 
     if(plantaActual?.id != null && planta.getPlanta.id != null && plantaActual.id != planta.getPlanta.id) {
       plantaActual = planta.getPlanta;
+      getData();
     }
     
     if(getBusqueda.busqueda != null && getBusqueda.busqueda != '' && listaPendientesAux != null) {
